@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Blinker:wght@600;700;800&family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
 
     .estado-boletos {
@@ -230,9 +230,41 @@
   <div class="acciones" id="panelAcciones">
     <button class="btn-descargar" onclick="descargarImagen()">1. Descargar Comprobante (PNG)</button>
     <button class="btn-whatsapp" onclick="abrirWhatsApp()">2. Enviar por WhatsApp</button>
+    <button class="btn-whatsapp" onclick="compartirTodo()">Compartir PDF + Texto (Celular)</button>
   </div>
 
   <script>
+    async function compartirTodo() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
+
+      // Convertimos el PDF a un archivo real en memoria
+      const pdfBlob = pdf.output('blob');
+      const archivoPDF = new File([pdfBlob], `Boleto_FiDEICO_${ultimoFolio}.pdf`, { type: 'application/pdf' });
+
+      const mensaje = `¡Hola *${ultimoNombre}*! Aquí tienes tu comprobante oficial de la *Rifa HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX) con folio *${ultimoFolio}*. ¡Mucha suerte!`;
+
+      // Verificamos si el celular soporta compartir archivos
+      if (navigator.canShare && navigator.canShare({ files: [archivoPDF] })) {
+        try {
+          await navigator.share({
+            files: [archivoPDF],
+            title: `Boleto FiDEICO ${ultimoFolio}`,
+            text: mensaje
+          });
+        } catch (err) {
+          console.log("Compartir cancelado.");
+        }
+      } else {
+        alert("Tu navegador (o PC) no soporta compartir archivos directo. Usa los botones 1 y 2.");
+      }
+    }
+
     // =====================================================================
     // PEGA AQUÍ TU URL REAL DE GOOGLE APPS SCRIPT (/exec)
     // =====================================================================
@@ -369,35 +401,20 @@
         return;
       }
 
-          const boton = document.querySelector('.btn-generar');
-      boton.disabled = true;
-      boton.textContent = "Registrando en FiDEICO...";
-
       const folio = vendedor.codigo + numero;
+      if (foliosVendidos.includes(folio)) {
+        alert(`⚠️ El boleto ${folio} ya fue vendido.`);
+        return;
+      }
+
+      const boton = document.querySelector('.btn-generar');
+      boton.disabled = true;
+      boton.textContent = "Generando PDF y subiendo a FiDEICO...";
+
       const telefonoFormateado = formatearTelefono(telefonoLimpio);
-      const vendedorRegistro = `${vendedor.nombre} (${vendedor.matricula})`;
 
       try {
-        // 1. Registro en Google Sheets
-        const respuesta = await fetch(URL_SCRIPT, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            folio: folio,
-            matricula: vendedor.matricula,
-            vendedor: vendedor.nombre,
-            nombre: nombre.toUpperCase(),
-            telefono: telefonoFormateado
-          })
-        });
-
-        const resultado = await respuesta.json();
-        if (!resultado.ok) {
-          alert("⚠️ " + resultado.mensaje);
-          return;
-        }
-
-        // 2. Dibujado del boleto estilo FiDEICO | CEFIX
+        // 1. Dibujamos el boleto primero para poder crear el PDF
         await document.fonts.ready;
 
         ultimoFolio = folio;
@@ -409,21 +426,15 @@
         if (plantillaCargada) {
           ctx.drawImage(imagenFondo, 0, 0, canvas.width, canvas.height);
         } else {
-          // Fondo blanco puro
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          // Franja lateral izquierda azul (#0500ff)
           ctx.fillStyle = "#0500ff";
           ctx.fillRect(0, 0, 32, canvas.height);
-
-          // Franja inferior (azul izquierda, negra derecha)
           ctx.fillStyle = "#0500ff";
           ctx.fillRect(0, canvas.height - 14, canvas.width * 0.78, 14);
           ctx.fillStyle = "#000000";
           ctx.fillRect(canvas.width * 0.78, canvas.height - 14, canvas.width * 0.22, 14);
 
-          // Recuadro de precio ($100.00 MXN) abajo a la derecha
           ctx.strokeStyle = "#000000";
           ctx.lineWidth = 3;
           ctx.beginPath();
@@ -439,60 +450,79 @@
           ctx.fillText("(CIEN PESOS 00/100 M. N.)", 805, 514);
         }
 
-        // --- TEXTOS DEL BOLETO ---
-        // Título principal
         ctx.font = "800 68px 'Blinker', sans-serif";
         ctx.fillStyle = "#000000";
         ctx.fillText("HORA DE VUELO", 68, 102);
 
-        // Subtítulo cursiva
         ctx.font = "italic 400 28px 'Inter', sans-serif";
-        ctx.fillStyle = "#000000";
         ctx.fillText("Actividad Recaudatoria AR°8", 68, 142);
 
-        // Folio grande arriba a la derecha (azul #0500ff)
         ctx.font = "800 120px 'Blinker', sans-serif";
         ctx.fillStyle = "#0500ff";
         ctx.textAlign = "right";
         ctx.fillText(ultimoFolio, 1025, 130);
         ctx.textAlign = "left";
 
-        // Vendedor
         ctx.font = "italic 400 20px 'Inter', sans-serif";
         ctx.fillStyle = "#000000";
         ctx.fillText("Vendedor", 68, 195);
-
         ctx.font = "700 32px 'Blinker', sans-serif";
         ctx.fillText(`${vendedor.nombre.toUpperCase()} (${vendedor.matricula})`, 68, 232);
 
-        // Organizador
         ctx.font = "italic 400 20px 'Inter', sans-serif";
         ctx.fillText("Organizador", 68, 285);
-
         ctx.font = "700 32px 'Blinker', sans-serif";
         ctx.fillText("FiDEICO | CEFIX", 68, 322);
 
-        // Titular del Boleto
         ctx.font = "italic 400 26px 'Inter', sans-serif";
         ctx.fillText("Titular del Boleto", 68, 390);
-
         ctx.font = "700 44px 'Blinker', sans-serif";
         ctx.fillText(ultimoNombre, 68, 442);
 
-        // Teléfono XXX XXX XXXX
         ctx.font = "italic 400 28px 'Inter', sans-serif";
         ctx.fillText("TEL. " + telefonoFormateado, 68, 485);
 
-        // Pie de boleto
         ctx.font = "700 17px 'Inter', sans-serif";
         ctx.fillText("EMISORA DE BOLETAJE Y COMPROBANTES | FiDEICO", 68, 535);
 
-        document.getElementById('panelAcciones').style.display = "flex";
+        // 2. Generamos el PDF en memoria (en formato texto Base64 para enviarlo a Drive)
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
+        pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
+        const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+        // 3. Enviamos datos + PDF a Google Apps Script
+        const respuesta = await fetch(URL_SCRIPT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            folio: folio,
+            matricula: vendedor.matricula,
+            vendedor: vendedor.nombre,
+            nombre: ultimoNombre,
+            telefono: telefonoFormateado,
+            pdfBase64: pdfBase64
+          })
+        });
+
+        const resultado = await respuesta.json();
+        if (!resultado.ok) {
+          alert("⚠️ " + resultado.mensaje);
+          return;
+        }
+
+        // 4. Guardamos el enlace de Drive y actualizamos indicadores verdes
+        ultimoUrlPdf = resultado.urlPdf;
         foliosVendidos.push(folio);
         actualizarNumeros();
+        document.getElementById('panelAcciones').style.display = "flex";
 
       } catch (error) {
-        alert("Error de conexión con Google Sheets. Verifica tu URL (/exec) y los permisos.");
+        alert("Error al subir el PDF. Verifica que autorizaste los permisos de Drive en Apps Script.");
       } finally {
         boton.disabled = false;
         boton.textContent = "Generar Boleto ($100.00 MXN)";
@@ -507,7 +537,27 @@
     }
 
     function abrirWhatsApp() {
-      const mensaje = `¡Hola ${ultimoNombre}! Aquí tienes tu comprobante oficial de la Rifa *HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX) con folio *${ultimoFolio}*. ¡Mucha suerte!`;
+      const mensaje = 
+`¡Hola *${ultimoNombre}*! ✈️🚀
+
+Aquí tienes tu comprobante oficial de la *Rifa HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
+
+🎟️ *Folio:* ${ultimoFolio}
+💵 *Aportación:* $100.00 MXN
+📄 *Descarga tu boleto oficial en PDF aquí:*
+${ultimoUrlPdf}
+
+──────────────────
+📋 *TÉRMINOS Y CONDICIONES*
+1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.
+2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.
+3. El premio consiste en una experiencia de Hora de Vuelo / Piloto por un Día sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.
+4. Para reclamar el premio es indispensable presentar este comprobante electrónico con folio válido e identificación oficial.
+5. Los fondos recaudados se destinan íntegramente a proyectos de investigación y cohetería experimental de CEFIX.
+──────────────────
+
+¡Muchas gracias por apoyar a CEFIX y mucha suerte!`;
+
       const url = `https://wa.me/52${ultimoTelefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
