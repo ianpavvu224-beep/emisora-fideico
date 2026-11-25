@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emisora de Boletaje y Comprobantes - FiDEICO</title>
@@ -9,28 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Blinker:wght@600;700;800&family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
-
-    .estado-boletos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .chip {
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      border: 1.5px solid #555;
-      color: #aaa;
-      background-color: #111;
-    }
-    .chip.vendido {
-      background-color: #16a34a; /* Verde */
-      border-color: #16a34a;
-      color: #ffffff;
-    }
-
     body {
       font-family: 'Inter', sans-serif;
       background-color: #000000;
@@ -84,6 +64,26 @@
     .col-vendedor { flex: 3; }
     .col-numero { flex: 1; }
 
+    .estado-boletos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid #555;
+      color: #aaa;
+      background-color: #111;
+    }
+    .chip.vendido {
+      background-color: #16a34a;
+      border-color: #16a34a;
+      color: #ffffff;
+    }
+
     label {
       display: block;
       font-size: 13px;
@@ -107,7 +107,6 @@
       border-color: #0500ff;
     }
 
-    /* Términos y condiciones */
     .caja-tyc {
       border: 1px solid #444;
       border-radius: 8px;
@@ -179,8 +178,6 @@
   <!-- FORMULARIO -->
   <div class="panel">
     <div class="fila">
-        <!-- INDICADOR VISUAL DE BOLETOS -->
-    <div id="estadoBoletos" class="estado-boletos"></div>
       <div class="col-vendedor">
         <label for="vendedor">Vendedor (Código | Nombre | Matrícula)</label>
         <select id="vendedor" onchange="actualizarNumeros()"></select>
@@ -190,6 +187,9 @@
         <select id="numero"></select>
       </div>
     </div>
+
+    <!-- INDICADOR VISUAL DE BOLETOS (AHORA SÍ DEBAJO DE LA FILA) -->
+    <div id="estadoBoletos" class="estado-boletos"></div>
 
     <div>
       <label for="nombre">Titular del Boleto (Comprador)</label>
@@ -205,7 +205,6 @@
     <details class="caja-tyc">
       <summary>Ver Términos y Condiciones (AR°8)</summary>
       <div class="texto-tyc" id="textoTerminos">
-        <!-- REEMPLAZA ESTE TEXTO CON TUS TÉRMINOS Y CONDICIONES OFICIALES -->
         <p><strong>TÉRMINOS Y CONDICIONES — ACTIVIDAD RECAUDATORIA AR°8 (FiDEICO | CEFIX)</strong></p>
         <p>1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.</p>
         <p>2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.</p>
@@ -228,50 +227,13 @@
 
   <!-- BOTONES DE ENTREGA -->
   <div class="acciones" id="panelAcciones">
-    <button class="btn-descargar" onclick="descargarImagen()">1. Descargar Comprobante (PNG)</button>
-    <button class="btn-whatsapp" onclick="abrirWhatsApp()">2. Enviar por WhatsApp</button>
-    <button class="btn-whatsapp" onclick="compartirTodo()">Compartir PDF + Texto (Celular)</button>
+    <button class="btn-whatsapp" onclick="abrirWhatsApp()">1. Enviar por WhatsApp (Enlace PDF + TyC)</button>
+    <button class="btn-descargar" onclick="descargarPDF()">2. Descargar copia en PDF</button>
   </div>
 
   <script>
-    async function compartirTodo() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
-      pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
-
-      // Convertimos el PDF a un archivo real en memoria
-      const pdfBlob = pdf.output('blob');
-      const archivoPDF = new File([pdfBlob], `Boleto_FiDEICO_${ultimoFolio}.pdf`, { type: 'application/pdf' });
-
-      const mensaje = `¡Hola *${ultimoNombre}*! Aquí tienes tu comprobante oficial de la *Rifa HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX) con folio *${ultimoFolio}*. ¡Mucha suerte!`;
-
-      // Verificamos si el celular soporta compartir archivos
-      if (navigator.canShare && navigator.canShare({ files: [archivoPDF] })) {
-        try {
-          await navigator.share({
-            files: [archivoPDF],
-            title: `Boleto FiDEICO ${ultimoFolio}`,
-            text: mensaje
-          });
-        } catch (err) {
-          console.log("Compartir cancelado.");
-        }
-      } else {
-        alert("Tu navegador (o PC) no soporta compartir archivos directo. Usa los botones 1 y 2.");
-      }
-    }
-
-    // =====================================================================
-    // PEGA AQUÍ TU URL REAL DE GOOGLE APPS SCRIPT (/exec)
-    // =====================================================================
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec";
 
-    // BASE DE VENDEDORES AUTORIZADOS
-    // Verdes (CEFIX) = 4 boletos | Nuevos (PAIDI) = 7 boletos
     const VENDEDORES = [
       // --- INTEGRANTES EN VERDE (4 BOLETOS) ---
       { codigo: "A",  matricula: "CEFIX-0002", nombre: "Ian Pablo Reyes Ramírez",        maxBoletos: 4 },
@@ -318,7 +280,6 @@
     const selectVendedor = document.getElementById('vendedor');
     const selectNumero = document.getElementById('numero');
 
-    // Llenamos el selector de vendedores
     VENDEDORES.forEach((v, index) => {
       const opcion = document.createElement('option');
       opcion.value = index;
@@ -326,23 +287,19 @@
       selectVendedor.appendChild(opcion);
     });
 
-    // Actualiza el límite de boletos (4 o 7) según el vendedor elegido
     let foliosVendidos = [];
 
-    // Consulta a Google Sheets qué boletos ya se vendieron
     async function cargarVendidos() {
-      if (URL_SCRIPT === "PEGA_AQUI_TU_URL_DE_GOOGLE_APPS_SCRIPT") return;
       try {
         const res = await fetch(URL_SCRIPT);
         const data = await res.json();
         foliosVendidos = data.vendidos || [];
         actualizarNumeros();
       } catch (e) {
-        console.log("No se pudo cargar la lista de vendidos.");
+        console.error("Error al consultar vendidos:", e);
       }
     }
 
-    // Actualiza el selector y pinta en VERDE los boletos ya vendidos
     function actualizarNumeros() {
       const vendedor = VENDEDORES[selectVendedor.value];
       const contenedor = document.getElementById('estadoBoletos');
@@ -353,14 +310,12 @@
         const folioActual = vendedor.codigo + i;
         const estaVendido = foliosVendidos.includes(folioActual);
 
-        // 1. Opción en el menú desplegable
         const opcion = document.createElement('option');
         opcion.value = i;
         opcion.textContent = estaVendido ? `${i} (Vendido)` : i;
         opcion.disabled = estaVendido;
         selectNumero.appendChild(opcion);
 
-        // 2. Cuadrito indicador visual
         const chip = document.createElement('div');
         chip.className = estaVendido ? 'chip vendido' : 'chip';
         chip.textContent = estaVendido ? `✓ ${folioActual}` : folioActual;
@@ -371,7 +326,6 @@
     actualizarNumeros();
     cargarVendidos();
 
-    // Plantilla opcional (si colocas plantilla.png con los logos y cohete de fondo)
     let plantillaCargada = false;
     const imagenFondo = new Image();
     imagenFondo.src = "plantilla.png";
@@ -380,6 +334,7 @@
     let ultimoFolio = "";
     let ultimoNombre = "";
     let ultimoTelefonoLimpio = "";
+    let ultimoUrlPdf = "";
 
     function formatearTelefono(numeroLimpio) {
       return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
@@ -414,7 +369,6 @@
       const telefonoFormateado = formatearTelefono(telefonoLimpio);
 
       try {
-        // 1. Dibujamos el boleto primero para poder crear el PDF
         await document.fonts.ready;
 
         ultimoFolio = folio;
@@ -485,7 +439,7 @@
         ctx.font = "700 17px 'Inter', sans-serif";
         ctx.fillText("EMISORA DE BOLETAJE Y COMPROBANTES | FiDEICO", 68, 535);
 
-        // 2. Generamos el PDF en memoria (en formato texto Base64 para enviarlo a Drive)
+        // Creamos el PDF en Base64
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
           orientation: 'landscape',
@@ -495,7 +449,7 @@
         pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
 
-        // 3. Enviamos datos + PDF a Google Apps Script
+        // Enviamos a Apps Script
         const respuesta = await fetch(URL_SCRIPT, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -509,31 +463,41 @@
           })
         });
 
-        const resultado = await respuesta.json();
+        const textoRespuesta = await respuesta.text();
+        let resultado;
+        try {
+          resultado = JSON.parse(textoRespuesta);
+        } catch (e) {
+          throw new Error("Apps Script no devolvió JSON (revisa permisos de Drive o la URL de implementación).");
+        }
+
         if (!resultado.ok) {
           alert("⚠️ " + resultado.mensaje);
           return;
         }
 
-        // 4. Guardamos el enlace de Drive y actualizamos indicadores verdes
         ultimoUrlPdf = resultado.urlPdf;
         foliosVendidos.push(folio);
         actualizarNumeros();
         document.getElementById('panelAcciones').style.display = "flex";
 
       } catch (error) {
-        alert("Error al subir el PDF. Verifica que autorizaste los permisos de Drive en Apps Script.");
+        alert("Detalle del error: " + error.message);
       } finally {
         boton.disabled = false;
         boton.textContent = "Generar Boleto ($100.00 MXN)";
       }
     }
 
-    function descargarImagen() {
-      const enlace = document.createElement('a');
-      enlace.download = `Boleto_FiDEICO_${ultimoFolio}.png`;
-      enlace.href = canvas.toDataURL("image/png");
-      enlace.click();
+    function descargarPDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`Boleto_FiDEICO_${ultimoFolio}.pdf`);
     }
 
     function abrirWhatsApp() {
@@ -564,4 +528,3 @@ ${ultimoUrlPdf}
   </script>
 
 </body>
-</html>
