@@ -32,7 +32,6 @@
       margin: 0;
     }
 
-    /* En celular usamos cover para llenar toda la pantalla vertical */
     @media (max-width: 600px) {
       body {
         background-size: cover;
@@ -40,27 +39,30 @@
       }
     }
 
+    /* PANEL PRINCIPAL TIPO CRISTAL */
     .panel {
-      background-color: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 2px solid #000000;
-      padding: 22px;
-      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.32));
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1.5px solid rgba(255, 255, 255, 0.8);
+      padding: 24px;
+      border-radius: 20px;
       width: 100%;
       max-width: 440px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.12),
+        inset 0 1px 1px rgba(255, 255, 255, 0.95);
     }
 
     .barra-sesion {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1.5px solid #e5e7eb;
-      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding-bottom: 12px;
       gap: 10px;
     }
     .info-vendedor strong {
@@ -68,50 +70,62 @@
       font-size: 20px;
       display: block;
       color: #000000;
+      text-transform: uppercase;
     }
     .info-vendedor span {
       font-size: 12px;
-      color: #555555;
+      color: #333333;
       font-weight: 600;
     }
     .btn-salir {
-      background-color: #000000;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       color: #ffffff;
-      border: none;
-      padding: 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 7px 14px;
       font-size: 12px;
-      border-radius: 6px;
+      border-radius: 10px;
     }
 
+    /* CHIPS DE BOLETOS TIPO CRISTAL */
     .estado-boletos {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
     }
     .chip {
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 6px 13px;
+      border-radius: 10px;
       font-size: 13px;
       font-weight: 700;
-      border: 1.5px solid #d1d5db;
-      color: #555555;
-      background-color: #f9fafb;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      color: #222222;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
     .chip.vendido {
-      background-color: #16a34a;
-      border-color: #16a34a;
+      background: rgba(22, 163, 74, 0.85);
+      border-color: rgba(255, 255, 255, 0.45);
       color: #ffffff;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
     }
 
+    /* AVISO DE CORTE COMPLETO CRISTAL VERDE */
     .panel-completado {
-      background-color: #f0fdf4;
-      border: 2px solid #16a34a;
-      border-radius: 10px;
+      background: rgba(240, 253, 244, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(22, 163, 74, 0.6);
+      border-radius: 14px;
       padding: 14px;
       text-align: center;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
     }
     .panel-completado p {
       margin: 0;
@@ -120,39 +134,50 @@
       font-weight: 700;
     }
     .btn-completado {
-      background-color: #16a34a;
+      background: rgba(22, 163, 74, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.35);
       color: #ffffff;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.25);
     }
 
     label {
       display: block;
       font-size: 13px;
       font-weight: 700;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       color: #111111;
     }
 
+    /* INPUTS Y SELECTS ESMERILADOS */
     input[type="text"], input[type="tel"], input[type="password"], select {
       width: 100%;
-      padding: 11px 12px;
-      border-radius: 8px;
-      border: 1.5px solid #000000;
-      background-color: #ffffff;
+      padding: 11px 13px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 0, 0, 0.14);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       color: #000000;
       font-family: 'Inter', sans-serif;
       font-size: 15px;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      transition: all 0.2s ease;
     }
     input:focus, select:focus {
       outline: none;
+      background: rgba(255, 255, 255, 0.85);
       border-color: #0500ff;
       box-shadow: 0 0 0 3px rgba(5, 0, 255, 0.15);
     }
 
+    /* CAJA DE TÉRMINOS Y CONDICIONES */
     .caja-tyc {
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
-      padding: 10px 12px;
-      background-color: #f9fafb;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+      padding: 10px 13px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       font-size: 12px;
     }
     .caja-tyc summary {
@@ -163,7 +188,7 @@
     }
     .texto-tyc {
       margin-top: 8px;
-      color: #333333;
+      color: #222222;
       line-height: 1.5;
       max-height: 150px;
       overflow-y: auto;
@@ -179,21 +204,39 @@
     }
     .check-tyc input { width: 16px; height: 16px; accent-color: #0500ff; }
 
+    /* BOTONES TIPO CRISTAL */
     button {
       padding: 13px;
-      border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-family: 'Inter', sans-serif;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.2s;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.15s ease, opacity 0.2s ease;
     }
-    button:hover { opacity: 0.9; }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-generar { background-color: #0500ff; color: #ffffff; }
-    .btn-descargar { background-color: #000000; color: #ffffff; }
-    .btn-whatsapp { background-color: #0500ff; color: #ffffff; }
+    button:hover { opacity: 0.92; transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-generar, .btn-whatsapp {
+      background: rgba(5, 0, 255, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      box-shadow:
+        0 8px 20px rgba(5, 0, 255, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-descargar {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
 
     .oculto { display: none !important; }
 
@@ -208,10 +251,10 @@
     canvas {
       max-width: 100%;
       width: 680px;
-      border: 2px solid #000000;
-      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      border-radius: 16px;
       background-color: #ffffff;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
     }
   </style>
 </head>
@@ -221,7 +264,7 @@
   <div class="panel" id="panelLogin">
     <div>
       <label for="loginCodigo">Código de Vendedor (Ej. A, B, AA)</label>
-      <input type="text" id="loginCodigo" placeholder="Ej. A" style="text-transform: uppercase;">
+      <input type="text" id="loginCodigo" placeholder="EJ. A" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
     </div>
     <div>
       <label for="loginPin">PIN personal (4 dígitos)</label>
@@ -256,7 +299,7 @@
 
     <div>
       <label for="nombre">Titular del Boleto (Comprador)</label>
-      <input type="text" id="nombre" placeholder="Ej. Ian Pablo Reyes Ramírez">
+      <input type="text" id="nombre" placeholder="EJ. IAN PABLO REYES RAMÍREZ" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
     </div>
 
     <div>
@@ -341,7 +384,7 @@
         const data = await res.json();
 
         if (!data.ok) {
-          alert("⚠️ " + data.mensaje);
+          alert(data.mensaje);
           return;
         }
 
@@ -349,8 +392,8 @@
         pinActivo = pin;
         foliosVendidos = data.vendidos || [];
 
-        document.getElementById('nombreVendedorActivo').textContent = vendedorActivo.nombre;
-        document.getElementById('metaVendedorActivo').textContent = `Código ${vendedorActivo.codigo}  |  ${vendedorActivo.matricula}`;
+        document.getElementById('nombreVendedorActivo').textContent = vendedorActivo.nombre.toUpperCase();
+        document.getElementById('metaVendedorActivo').textContent = `CÓDIGO ${vendedorActivo.codigo}  |  ${vendedorActivo.matricula}`;
         document.getElementById('panelLogin').classList.add('oculto');
         document.getElementById('panelEmisor').classList.remove('oculto');
         canvas.classList.remove('oculto');
@@ -417,7 +460,7 @@
       const mensaje =
 `*CORTE COMPLETO — RIFA AR°8 (FiDEICO | CEFIX)*
 
-*Vendedor:* ${vendedorActivo.nombre}
+*Vendedor:* ${vendedorActivo.nombre.toUpperCase()}
 *Matrícula:* ${vendedorActivo.matricula} (Código ${vendedorActivo.codigo})
 *Boletos vendidos:* ${vendedorActivo.maxBoletos} / ${vendedorActivo.maxBoletos}
 *Total a entregar:* $${totalDinero}.00 MXN
@@ -435,7 +478,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
       }
 
       const numero = selectNumero.value;
-      const nombre = document.getElementById('nombre').value.trim();
+      const nombre = document.getElementById('nombre').value.trim().toUpperCase();
       const telefonoLimpio = document.getElementById('telefono').value.replace(/\D/g, '');
 
       if (!nombre || telefonoLimpio.length !== 10) {
@@ -445,7 +488,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
 
       const folio = vendedorActivo.codigo + numero;
       if (foliosVendidos.includes(folio)) {
-        alert(`⚠️ El boleto ${folio} ya fue vendido.`);
+        alert(`El boleto ${folio} ya fue vendido.`);
         return;
       }
 
@@ -459,7 +502,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
         await document.fonts.ready;
 
         ultimoFolio = folio;
-        ultimoNombre = nombre.toUpperCase();
+        ultimoNombre = nombre;
         ultimoTelefonoLimpio = telefonoLimpio;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -559,7 +602,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
 
         const resultado = await respuesta.json();
         if (!resultado.ok) {
-          alert("⚠️ " + resultado.mensaje);
+          alert(resultado.mensaje);
           return;
         }
 
