@@ -60,9 +60,31 @@
       box-sizing: border-box;
     }
 
-    .fila { display: flex; gap: 10px; }
-    .col-vendedor { flex: 3; }
-    .col-numero { flex: 1; }
+    .barra-sesion {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
+      gap: 10px;
+    }
+    .info-vendedor strong {
+      font-family: 'Blinker', sans-serif;
+      font-size: 20px;
+      display: block;
+    }
+    .info-vendedor span {
+      font-size: 12px;
+      color: #aaa;
+    }
+    .btn-salir {
+      background-color: transparent;
+      color: #ffffff;
+      border: 1px solid #666;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
 
     .estado-boletos {
       display: flex;
@@ -91,7 +113,7 @@
       margin-bottom: 5px;
     }
 
-    input[type="text"], input[type="tel"], select {
+    input[type="text"], input[type="tel"], input[type="password"], select {
       width: 100%;
       padding: 10px 12px;
       border-radius: 6px;
@@ -99,7 +121,7 @@
       background-color: #000000;
       color: #ffffff;
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
+      font-size: 15px;
       box-sizing: border-box;
     }
     input:focus, select:focus {
@@ -151,6 +173,8 @@
     .btn-descargar { background-color: #ffffff; color: #000000; }
     .btn-whatsapp { background-color: #0500ff; color: #ffffff; border: 2px solid #ffffff; }
 
+    .oculto { display: none !important; }
+
     .acciones {
       display: none;
       flex-direction: column;
@@ -175,21 +199,36 @@
     <p>A cargo de <span>FiDEICO</span></p>
   </div>
 
-  <!-- FORMULARIO -->
-  <div class="panel">
-    <div class="fila">
-      <div class="col-vendedor">
-        <label for="vendedor">Vendedor (Código | Nombre | Matrícula)</label>
-        <select id="vendedor" onchange="actualizarNumeros()"></select>
+  <!-- 1. PANTALLA DE ACCESO (LOGIN) -->
+  <div class="panel" id="panelLogin">
+    <div>
+      <label for="loginCodigo">Tu Código de Vendedor (Ej. A, B, AA)</label>
+      <input type="text" id="loginCodigo" placeholder="Ej. A" style="text-transform: uppercase;">
+    </div>
+    <div>
+      <label for="loginPin">Tu PIN personal (4 dígitos)</label>
+      <input type="password" id="loginPin" placeholder="••••" inputmode="numeric" maxlength="6">
+    </div>
+    <button class="btn-generar" id="btnLogin" onclick="iniciarSesion()">Ingresar a mis boletos</button>
+  </div>
+
+  <!-- 2. PANEL DEL EMISOR (OCULTO HASTA INICIAR SESIÓN) -->
+  <div class="panel oculto" id="panelEmisor">
+    <div class="barra-sesion">
+      <div class="info-vendedor">
+        <strong id="nombreVendedorActivo"></strong>
+        <span id="metaVendedorActivo"></span>
       </div>
-      <div class="col-numero">
-        <label for="numero">Boleto #</label>
-        <select id="numero"></select>
-      </div>
+      <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
     </div>
 
-    <!-- INDICADOR VISUAL DE BOLETOS (AHORA SÍ DEBAJO DE LA FILA) -->
+    <!-- INDICADOR VISUAL DE BOLETOS -->
     <div id="estadoBoletos" class="estado-boletos"></div>
+
+    <div>
+      <label for="numero">Selecciona tu Boleto #</label>
+      <select id="numero"></select>
+    </div>
 
     <div>
       <label for="nombre">Titular del Boleto (Comprador)</label>
@@ -201,10 +240,9 @@
       <input type="tel" id="telefono" placeholder="Ej. 6562784337" maxlength="12">
     </div>
 
-    <!-- TÉRMINOS Y CONDICIONES -->
     <details class="caja-tyc">
       <summary>Ver Términos y Condiciones (AR°8)</summary>
-      <div class="texto-tyc" id="textoTerminos">
+      <div class="texto-tyc">
         <p><strong>TÉRMINOS Y CONDICIONES — ACTIVIDAD RECAUDATORIA AR°8 (FiDEICO | CEFIX)</strong></p>
         <p>1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.</p>
         <p>2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.</p>
@@ -219,11 +257,11 @@
       <span>El titular acepta los Términos y Condiciones de la actividad.</span>
     </label>
 
-    <button class="btn-generar" onclick="generarBoleto()">Generar Boleto ($100.00 MXN)</button>
+    <button class="btn-generar" id="btnGenerar" onclick="generarBoleto()">Generar Boleto ($100.00 MXN)</button>
   </div>
 
   <!-- VISTA PREVIA DEL BOLETO -->
-  <canvas id="lienzoBoleto" width="1080" height="600"></canvas>
+  <canvas id="lienzoBoleto" class="oculto" width="1080" height="600"></canvas>
 
   <!-- BOTONES DE ENTREGA -->
   <div class="acciones" id="panelAcciones">
@@ -234,97 +272,13 @@
   <script>
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec";
 
-    const VENDEDORES = [
-      // --- INTEGRANTES EN VERDE (4 BOLETOS) ---
-      { codigo: "A",  matricula: "CEFIX-0002", nombre: "Ian Pablo Reyes Ramírez",        maxBoletos: 4 },
-      { codigo: "B",  matricula: "CEFIX-0003", nombre: "Isabella Mapula Ortiz",          maxBoletos: 4 },
-      { codigo: "C",  matricula: "CEFIX-0005", nombre: "Azul María Padilla Del Real",    maxBoletos: 4 },
-      { codigo: "D",  matricula: "CEFIX-0007", nombre: "Karina Medillin Rodriguez",      maxBoletos: 4 },
-      { codigo: "E",  matricula: "CEFIX-0010", nombre: "Jose Eduardo Andrade Suarez",    maxBoletos: 4 },
-      { codigo: "F",  matricula: "CEFIX-0011", nombre: "Job Abraham Estrella Durán",     maxBoletos: 4 },
-      { codigo: "G",  matricula: "CEFIX-0012", nombre: "Daniel Aaron Asistente Avila",   maxBoletos: 4 },
-      { codigo: "H",  matricula: "CEFIX-0014", nombre: "Dafne Lorena Delgado Luna",      maxBoletos: 4 },
-      { codigo: "I",  matricula: "CEFIX-0015", nombre: "Josue Leonardo Oliva Salas",     maxBoletos: 4 },
-      { codigo: "J",  matricula: "CEFIX-0016", nombre: "Cesar Emiliano Cuevas Morales",  maxBoletos: 4 },
-      { codigo: "K",  matricula: "CEFIX-0017", nombre: "Angel Omar Minor Arzate",        maxBoletos: 4 },
-      { codigo: "L",  matricula: "CEFIX-0018", nombre: "Gael Eduardo Alatriste de Lira", maxBoletos: 4 },
-      { codigo: "M",  matricula: "CEFIX-0019", nombre: "Milan Jesus Torres Lara",        maxBoletos: 4 },
-      { codigo: "N",  matricula: "CEFIX-0024", nombre: "Mextli Yaretzi Beltrán Loya",    maxBoletos: 4 },
-      { codigo: "O",  matricula: "CEFIX-0025", nombre: "Brisa Naydelin Salinas Rodriguez", maxBoletos: 4 },
-      { codigo: "P",  matricula: "CEFIX-0026", nombre: "Dania Maria Jimenez Espinoza",   maxBoletos: 4 },
-      { codigo: "Q",  matricula: "CEFIX-0027", nombre: "Derek Favela Lemus",             maxBoletos: 4 },
-      { codigo: "R",  matricula: "CEFIX-0030", nombre: "Aleydis Sugey Servin Tlazalo",   maxBoletos: 4 },
-      { codigo: "S",  matricula: "CEFIX-0031", nombre: "Luis Emiliano López Meza",       maxBoletos: 4 },
-      { codigo: "T",  matricula: "CEFIX-0033", nombre: "Emmanuel Dominguez Garcia",      maxBoletos: 4 },
-      { codigo: "U",  matricula: "CEFIX-0035", nombre: "Aret Amairany Martinez Leal",    maxBoletos: 4 },
-
-      // --- INTEGRANTES NUEVOS PAIDI (7 BOLETOS) ---
-      { codigo: "V",  matricula: "PAIDI-40", nombre: "Miguel Enrique González Ramírez",  maxBoletos: 7 },
-      { codigo: "W",  matricula: "PAIDI-41", nombre: "David Esau Valdez Monreal",        maxBoletos: 7 },
-      { codigo: "X",  matricula: "PAIDI-42", nombre: "Girhel Lizbeth Arreola López",     maxBoletos: 7 },
-      { codigo: "Y",  matricula: "PAIDI-43", nombre: "Angel Said Flores Robles",           maxBoletos: 7 },
-      { codigo: "Z",  matricula: "PAIDI-44", nombre: "Eduardo Alejandro Diaz Apodaca",   maxBoletos: 7 },
-      { codigo: "AA", matricula: "PAIDI-45", nombre: "Carlos Yahel Ontiveros Herrera",   maxBoletos: 7 },
-      { codigo: "AB", matricula: "PAIDI-46", nombre: "Aylin Zoe Torres Reveles",         maxBoletos: 7 },
-      { codigo: "AC", matricula: "PAIDI-47", nombre: "Daniel Ivan Flores Avila",         maxBoletos: 7 },
-      { codigo: "AD", matricula: "PAIDI-48", nombre: "Julian Hernandez Alonso",          maxBoletos: 7 },
-      { codigo: "AE", matricula: "PAIDI-49", nombre: "María Fernanda Cisneros Ramírez",  maxBoletos: 7 },
-      { codigo: "AF", matricula: "PAIDI-50", nombre: "Omar Fernández López",             maxBoletos: 7 },
-      { codigo: "AG", matricula: "PAIDI-51", nombre: "Valeria Rosales Prado",            maxBoletos: 7 },
-      { codigo: "AH", matricula: "PAIDI-52", nombre: "Sara Naomi Rodríguez Reyes",       maxBoletos: 7 },
-      { codigo: "AI", matricula: "PAIDI-53", nombre: "Johana Valeria Domínguez Sosa",    maxBoletos: 7 }
-    ];
-
     const canvas = document.getElementById('lienzoBoleto');
     const ctx = canvas.getContext('2d');
-    const selectVendedor = document.getElementById('vendedor');
     const selectNumero = document.getElementById('numero');
 
-    VENDEDORES.forEach((v, index) => {
-      const opcion = document.createElement('option');
-      opcion.value = index;
-      opcion.textContent = `${v.codigo} — ${v.nombre} (${v.matricula})`;
-      selectVendedor.appendChild(opcion);
-    });
-
+    let vendedorActivo = null;
+    let pinActivo = "";
     let foliosVendidos = [];
-
-    async function cargarVendidos() {
-      try {
-        const res = await fetch(URL_SCRIPT);
-        const data = await res.json();
-        foliosVendidos = data.vendidos || [];
-        actualizarNumeros();
-      } catch (e) {
-        console.error("Error al consultar vendidos:", e);
-      }
-    }
-
-    function actualizarNumeros() {
-      const vendedor = VENDEDORES[selectVendedor.value];
-      const contenedor = document.getElementById('estadoBoletos');
-      selectNumero.innerHTML = "";
-      contenedor.innerHTML = "";
-
-      for (let i = 1; i <= vendedor.maxBoletos; i++) {
-        const folioActual = vendedor.codigo + i;
-        const estaVendido = foliosVendidos.includes(folioActual);
-
-        const opcion = document.createElement('option');
-        opcion.value = i;
-        opcion.textContent = estaVendido ? `${i} (Vendido)` : i;
-        opcion.disabled = estaVendido;
-        selectNumero.appendChild(opcion);
-
-        const chip = document.createElement('div');
-        chip.className = estaVendido ? 'chip vendido' : 'chip';
-        chip.textContent = estaVendido ? `✓ ${folioActual}` : folioActual;
-        contenedor.appendChild(chip);
-      }
-    }
-
-    actualizarNumeros();
-    cargarVendidos();
 
     let plantillaCargada = false;
     const imagenFondo = new Image();
@@ -340,13 +294,90 @@
       return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
     }
 
+    async function iniciarSesion() {
+      const codigo = document.getElementById('loginCodigo').value.trim().toUpperCase();
+      const pin = document.getElementById('loginPin').value.trim();
+
+      if (!codigo || !pin) {
+        alert("Ingresa tu código de vendedor y tu PIN.");
+        return;
+      }
+
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = true;
+      btn.textContent = "Verificando acceso...";
+
+      try {
+        const res = await fetch(URL_SCRIPT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ accion: "login", codigo: codigo, pin: pin })
+        });
+        const data = await res.json();
+
+        if (!data.ok) {
+          alert("⚠️ " + data.mensaje);
+          return;
+        }
+
+        vendedorActivo = data.vendedor;
+        pinActivo = pin;
+        foliosVendidos = data.vendidos || [];
+
+        // Mostrar panel del emisor bloqueado a este vendedor
+        document.getElementById('nombreVendedorActivo').textContent = vendedorActivo.nombre;
+        document.getElementById('metaVendedorActivo').textContent = `Código ${vendedorActivo.codigo}  |  ${vendedorActivo.matricula}`;
+        document.getElementById('panelLogin').classList.add('oculto');
+        document.getElementById('panelEmisor').classList.remove('oculto');
+        canvas.classList.remove('oculto');
+
+        actualizarNumeros();
+      } catch (err) {
+        alert("Error de conexión: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Ingresar a mis boletos";
+      }
+    }
+
+    function cerrarSesion() {
+      vendedorActivo = null;
+      pinActivo = "";
+      document.getElementById('loginPin').value = "";
+      document.getElementById('panelEmisor').classList.add('oculto');
+      canvas.classList.add('oculto');
+      document.getElementById('panelAcciones').style.display = "none";
+      document.getElementById('panelLogin').classList.remove('oculto');
+    }
+
+    function actualizarNumeros() {
+      const contenedor = document.getElementById('estadoBoletos');
+      selectNumero.innerHTML = "";
+      contenedor.innerHTML = "";
+
+      for (let i = 1; i <= vendedorActivo.maxBoletos; i++) {
+        const folioActual = vendedorActivo.codigo + i;
+        const estaVendido = foliosVendidos.includes(folioActual);
+
+        const opcion = document.createElement('option');
+        opcion.value = i;
+        opcion.textContent = estaVendido ? `${folioActual} (Vendido)` : folioActual;
+        opcion.disabled = estaVendido;
+        selectNumero.appendChild(opcion);
+
+        const chip = document.createElement('div');
+        chip.className = estaVendido ? 'chip vendido' : 'chip';
+        chip.textContent = estaVendido ? `✓ ${folioActual}` : folioActual;
+        contenedor.appendChild(chip);
+      }
+    }
+
     async function generarBoleto() {
       if (!document.getElementById('aceptoTyc').checked) {
         alert("Es necesario aceptar los Términos y Condiciones para emitir el boleto.");
         return;
       }
 
-      const vendedor = VENDEDORES[selectVendedor.value];
       const numero = selectNumero.value;
       const nombre = document.getElementById('nombre').value.trim();
       const telefonoLimpio = document.getElementById('telefono').value.replace(/\D/g, '');
@@ -356,13 +387,13 @@
         return;
       }
 
-      const folio = vendedor.codigo + numero;
+      const folio = vendedorActivo.codigo + numero;
       if (foliosVendidos.includes(folio)) {
         alert(`⚠️ El boleto ${folio} ya fue vendido.`);
         return;
       }
 
-      const boton = document.querySelector('.btn-generar');
+      const boton = document.getElementById('btnGenerar');
       boton.disabled = true;
       boton.textContent = "Generando PDF y subiendo a FiDEICO...";
 
@@ -421,7 +452,7 @@
         ctx.fillStyle = "#000000";
         ctx.fillText("Vendedor", 68, 195);
         ctx.font = "700 32px 'Blinker', sans-serif";
-        ctx.fillText(`${vendedor.nombre.toUpperCase()} (${vendedor.matricula})`, 68, 232);
+        ctx.fillText(`${vendedorActivo.nombre.toUpperCase()} (${vendedorActivo.matricula})`, 68, 232);
 
         ctx.font = "italic 400 20px 'Inter', sans-serif";
         ctx.fillText("Organizador", 68, 285);
@@ -439,7 +470,6 @@
         ctx.font = "700 17px 'Inter', sans-serif";
         ctx.fillText("EMISORA DE BOLETAJE Y COMPROBANTES | FiDEICO", 68, 535);
 
-        // Creamos el PDF en Base64
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
           orientation: 'landscape',
@@ -449,28 +479,21 @@
         pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
 
-        // Enviamos a Apps Script
         const respuesta = await fetch(URL_SCRIPT, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            folio: folio,
-            matricula: vendedor.matricula,
-            vendedor: vendedor.nombre,
+            accion: "emitir",
+            codigo: vendedorActivo.codigo,
+            pin: pinActivo,
+            numero: numero,
             nombre: ultimoNombre,
             telefono: telefonoFormateado,
             pdfBase64: pdfBase64
           })
         });
 
-        const textoRespuesta = await respuesta.text();
-        let resultado;
-        try {
-          resultado = JSON.parse(textoRespuesta);
-        } catch (e) {
-          throw new Error("Apps Script no devolvió JSON (revisa permisos de Drive o la URL de implementación).");
-        }
-
+        const resultado = await respuesta.json();
         if (!resultado.ok) {
           alert("⚠️ " + resultado.mensaje);
           return;
@@ -502,17 +525,17 @@
 
     function abrirWhatsApp() {
       const mensaje = 
-`¡Hola *${ultimoNombre}*! ✈️🚀
+`¡Hola *${ultimoNombre}*!
 
 Aquí tienes tu comprobante oficial de la *Rifa HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
 
-🎟️ *Folio:* ${ultimoFolio}
-💵 *Aportación:* $100.00 MXN
-📄 *Descarga tu boleto oficial en PDF aquí:*
+*Folio:* ${ultimoFolio}
+*Aportación:* $100.00 MXN
+*Descarga tu boleto oficial en PDF aquí:*
 ${ultimoUrlPdf}
 
 ──────────────────
-📋 *TÉRMINOS Y CONDICIONES*
+*TÉRMINOS Y CONDICIONES*
 1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.
 2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.
 3. El premio consiste en una experiencia de Hora de Vuelo / Piloto por un Día sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.
@@ -528,3 +551,4 @@ ${ultimoUrlPdf}
   </script>
 
 </body>
+</html>
