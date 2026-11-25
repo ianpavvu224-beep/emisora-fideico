@@ -11,6 +11,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
+    .panel-completado {
+      background-color: #052e16;
+      border: 2px solid #16a34a;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .panel-completado p {
+      margin: 0;
+      font-size: 14px;
+      color: #dcfce7;
+      font-weight: 600;
+    }
+    .btn-completado {
+      background-color: #16a34a;
+      color: #ffffff;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #000000;
@@ -225,6 +246,12 @@
     <!-- INDICADOR VISUAL DE BOLETOS -->
     <div id="estadoBoletos" class="estado-boletos"></div>
 
+    <!-- AVISO DE CORTE COMPLETO (SOLO APARECE AL VENDER EL 100%) -->
+    <div id="panelCompletado" class="panel-completado oculto">
+      <p>🎉 ¡Completaste el 100% de tus boletos asignados!</p>
+      <button class="btn-completado" onclick="notificarCorteCompleto()">Enviar resumen y notificar a FiDEICO</button>
+    </div>
+
     <div>
       <label for="numero">Selecciona tu Boleto #</label>
       <select id="numero"></select>
@@ -270,6 +297,8 @@
   </div>
 
   <script>
+
+    const TELEFONO_ADMIN = "6560000000"; // <-- Cambia esto por tu número a 10 dígitos
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec";
 
     const canvas = document.getElementById('lienzoBoleto');
@@ -352,12 +381,18 @@
 
     function actualizarNumeros() {
       const contenedor = document.getElementById('estadoBoletos');
+      const panelCompletado = document.getElementById('panelCompletado');
+      const btnGenerar = document.getElementById('btnGenerar');
+
       selectNumero.innerHTML = "";
       contenedor.innerHTML = "";
+
+      let vendidosPropios = 0;
 
       for (let i = 1; i <= vendedorActivo.maxBoletos; i++) {
         const folioActual = vendedorActivo.codigo + i;
         const estaVendido = foliosVendidos.includes(folioActual);
+        if (estaVendido) vendidosPropios++;
 
         const opcion = document.createElement('option');
         opcion.value = i;
@@ -370,6 +405,33 @@
         chip.textContent = estaVendido ? `✓ ${folioActual}` : folioActual;
         contenedor.appendChild(chip);
       }
+
+      // Si ya vendió todos sus boletos, mostramos el botón de aviso y bloqueamos el botón de generar
+      if (vendidosPropios >= vendedorActivo.maxBoletos) {
+        panelCompletado.classList.remove('oculto');
+        btnGenerar.disabled = true;
+        btnGenerar.textContent = "Todos tus boletos han sido vendidos";
+      } else {
+        panelCompletado.classList.add('oculto');
+        btnGenerar.disabled = false;
+        btnGenerar.textContent = "Generar Boleto ($100.00 MXN)";
+      }
+    }
+
+    function notificarCorteCompleto() {
+      const totalDinero = vendedorActivo.maxBoletos * 100;
+      const mensaje =
+` *CORTE COMPLETO — RIFA AR°8 (FiDEICO | CEFIX)*
+
+ *Vendedor:* ${vendedorActivo.nombre}
+ *Matrícula:* ${vendedorActivo.matricula} (Código ${vendedorActivo.codigo})
+ *Boletos vendidos:* ${vendedorActivo.maxBoletos} / ${vendedorActivo.maxBoletos}
+ *Total a entregar:* $${totalDinero}.00 MXN
+
+¡Listo! Ya terminé de vender el 100% de mis boletos asignados.`;
+
+      const url = `https://wa.me/52${TELEFONO_ADMIN}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
     }
 
     async function generarBoleto() {
