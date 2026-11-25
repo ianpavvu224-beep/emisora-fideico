@@ -10,6 +10,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Blinker:wght@600;700;800&family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 
   <style>
+
+    .estado-boletos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid #555;
+      color: #aaa;
+      background-color: #111;
+    }
+    .chip.vendido {
+      background-color: #16a34a; /* Verde */
+      border-color: #16a34a;
+      color: #ffffff;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #000000;
@@ -158,6 +179,8 @@
   <!-- FORMULARIO -->
   <div class="panel">
     <div class="fila">
+        <!-- INDICADOR VISUAL DE BOLETOS -->
+    <div id="estadoBoletos" class="estado-boletos"></div>
       <div class="col-vendedor">
         <label for="vendedor">Vendedor (Código | Nombre | Matrícula)</label>
         <select id="vendedor" onchange="actualizarNumeros()"></select>
@@ -272,17 +295,49 @@
     });
 
     // Actualiza el límite de boletos (4 o 7) según el vendedor elegido
-    function actualizarNumeros() {
-      const vendedor = VENDEDORES[selectVendedor.value];
-      selectNumero.innerHTML = "";
-      for (let i = 1; i <= vendedor.maxBoletos; i++) {
-        const opcion = document.createElement('option');
-        opcion.value = i;
-        opcion.textContent = i;
-        selectNumero.appendChild(opcion);
+    let foliosVendidos = [];
+
+    // Consulta a Google Sheets qué boletos ya se vendieron
+    async function cargarVendidos() {
+      if (URL_SCRIPT === "PEGA_AQUI_TU_URL_DE_GOOGLE_APPS_SCRIPT") return;
+      try {
+        const res = await fetch(URL_SCRIPT);
+        const data = await res.json();
+        foliosVendidos = data.vendidos || [];
+        actualizarNumeros();
+      } catch (e) {
+        console.log("No se pudo cargar la lista de vendidos.");
       }
     }
-    actualizarNumeros(); // Carga inicial
+
+    // Actualiza el selector y pinta en VERDE los boletos ya vendidos
+    function actualizarNumeros() {
+      const vendedor = VENDEDORES[selectVendedor.value];
+      const contenedor = document.getElementById('estadoBoletos');
+      selectNumero.innerHTML = "";
+      contenedor.innerHTML = "";
+
+      for (let i = 1; i <= vendedor.maxBoletos; i++) {
+        const folioActual = vendedor.codigo + i;
+        const estaVendido = foliosVendidos.includes(folioActual);
+
+        // 1. Opción en el menú desplegable
+        const opcion = document.createElement('option');
+        opcion.value = i;
+        opcion.textContent = estaVendido ? `${i} (Vendido)` : i;
+        opcion.disabled = estaVendido;
+        selectNumero.appendChild(opcion);
+
+        // 2. Cuadrito indicador visual
+        const chip = document.createElement('div');
+        chip.className = estaVendido ? 'chip vendido' : 'chip';
+        chip.textContent = estaVendido ? `✓ ${folioActual}` : folioActual;
+        contenedor.appendChild(chip);
+      }
+    }
+
+    actualizarNumeros();
+    cargarVendidos();
 
     // Plantilla opcional (si colocas plantilla.png con los logos y cohete de fondo)
     let plantillaCargada = false;
@@ -314,8 +369,8 @@
         return;
       }
 
-      if (URL_SCRIPT === "PEGA_AQUI_TU_URL_DE_GOOGLE_APPS_SCRIPT") {
-        alert("Falta pegar tu URL real de Google Apps Script en el código.");
+      if (URL_SCRIPT === "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec") {
+        alert("https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec");
         return;
       }
 
@@ -334,7 +389,8 @@
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             folio: folio,
-            vendedor: vendedorRegistro,
+            matricula: vendedor.matricula,
+            vendedor: vendedor.nombre,
             nombre: nombre.toUpperCase(),
             telefono: telefonoFormateado
           })
@@ -437,6 +493,8 @@
         ctx.fillText("EMISORA DE BOLETAJE Y COMPROBANTES | FiDEICO", 68, 535);
 
         document.getElementById('panelAcciones').style.display = "flex";
+        foliosVendidos.push(folio);
+        actualizarNumeros();
 
       } catch (error) {
         alert("Error de conexión con Google Sheets. Verifica tu URL (/exec) y los permisos.");
