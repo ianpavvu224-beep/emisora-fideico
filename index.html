@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emisora de Boletaje y Comprobantes - FiDEICO</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Blinker:wght@600;700;800&family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #000000;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      gap: 20px;
+      margin: 0;
+    }
+
+    .encabezado { text-align: center; }
+    .encabezado h1 {
+      font-family: 'Blinker', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .encabezado p {
+      font-size: 13px;
+      margin: 6px 0 0 0;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .encabezado span {
+      color: #0500ff;
+      font-weight: 700;
+      background-color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .panel {
+      background-color: #000000;
+      border: 2px solid #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-sizing: border-box;
+    }
+
+    .fila { display: flex; gap: 10px; }
+    .col-vendedor { flex: 3; }
+    .col-numero { flex: 1; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="tel"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1.5px solid #ffffff;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0500ff;
+    }
+
+    /* Términos y condiciones */
+    .caja-tyc {
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 12px;
+      background-color: #0a0a0a;
+      font-size: 12px;
+    }
+    .caja-tyc summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: #ffffff;
+      user-select: none;
+    }
+    .texto-tyc {
+      margin-top: 10px;
+      color: #cccccc;
+      line-height: 1.5;
+      max-height: 160px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .check-tyc {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .check-tyc input { width: 16px; height: 16px; accent-color: #0500ff; }
+
+    button {
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-generar { background-color: #0500ff; color: #ffffff; }
+    .btn-descargar { background-color: #ffffff; color: #000000; }
+    .btn-whatsapp { background-color: #0500ff; color: #ffffff; border: 2px solid #ffffff; }
+
+    .acciones {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    canvas {
+      max-width: 100%;
+      width: 680px;
+      border: 2px solid #ffffff;
+      border-radius: 10px;
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="encabezado">
+    <h1>Emisora de Boletaje y Comprobantes</h1>
+    <p>A cargo de <span>FiDEICO</span></p>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="panel">
+    <div class="fila">
+      <div class="col-vendedor">
+        <label for="vendedor">Vendedor (Código | Nombre | Matrícula)</label>
+        <select id="vendedor" onchange="actualizarNumeros()"></select>
+      </div>
+      <div class="col-numero">
+        <label for="numero">Boleto #</label>
+        <select id="numero"></select>
+      </div>
+    </div>
+
+    <div>
+      <label for="nombre">Titular del Boleto (Comprador)</label>
+      <input type="text" id="nombre" placeholder="Ej. Ian Pablo Reyes Ramírez">
+    </div>
+
+    <div>
+      <label for="telefono">Teléfono (10 dígitos)</label>
+      <input type="tel" id="telefono" placeholder="Ej. 6562784337" maxlength="12">
+    </div>
+
+    <!-- TÉRMINOS Y CONDICIONES -->
+    <details class="caja-tyc">
+      <summary>Ver Términos y Condiciones (AR°8)</summary>
+      <div class="texto-tyc" id="textoTerminos">
+        <!-- REEMPLAZA ESTE TEXTO CON TUS TÉRMINOS Y CONDICIONES OFICIALES -->
+        <p><strong>TÉRMINOS Y CONDICIONES — ACTIVIDAD RECAUDATORIA AR°8 (FiDEICO | CEFIX)</strong></p>
+        <p>1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.</p>
+        <p>2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.</p>
+        <p>3. El premio consiste en una experiencia de Hora de Vuelo / Piloto por un Día sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.</p>
+        <p>4. Para reclamar el premio es indispensable presentar este comprobante electrónico con folio válido e identificación oficial.</p>
+        <p>5. Los fondos recaudados se destinan íntegramente a proyectos de investigación y cohetería experimental de CEFIX.</p>
+      </div>
+    </details>
+
+    <label class="check-tyc">
+      <input type="checkbox" id="aceptoTyc" checked>
+      <span>El titular acepta los Términos y Condiciones de la actividad.</span>
+    </label>
+
+    <button class="btn-generar" onclick="generarBoleto()">Generar Boleto ($100.00 MXN)</button>
+  </div>
+
+  <!-- VISTA PREVIA DEL BOLETO -->
+  <canvas id="lienzoBoleto" width="1080" height="600"></canvas>
+
+  <!-- BOTONES DE ENTREGA -->
+  <div class="acciones" id="panelAcciones">
+    <button class="btn-descargar" onclick="descargarImagen()">1. Descargar Comprobante (PNG)</button>
+    <button class="btn-whatsapp" onclick="abrirWhatsApp()">2. Enviar por WhatsApp</button>
+  </div>
+
+  <script>
+    // =====================================================================
+    // PEGA AQUÍ TU URL REAL DE GOOGLE APPS SCRIPT (/exec)
+    // =====================================================================
+    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec";
+
+    // BASE DE VENDEDORES AUTORIZADOS
+    // Verdes (CEFIX) = 4 boletos | Nuevos (PAIDI) = 7 boletos
+    const VENDEDORES = [
+      // --- INTEGRANTES EN VERDE (4 BOLETOS) ---
+      { codigo: "A",  matricula: "CEFIX-0002", nombre: "Ian Pablo Reyes Ramírez",        maxBoletos: 4 },
+      { codigo: "B",  matricula: "CEFIX-0003", nombre: "Isabella Mapula Ortiz",          maxBoletos: 4 },
+      { codigo: "C",  matricula: "CEFIX-0005", nombre: "Azul María Padilla Del Real",    maxBoletos: 4 },
+      { codigo: "D",  matricula: "CEFIX-0007", nombre: "Karina Medillin Rodriguez",      maxBoletos: 4 },
+      { codigo: "E",  matricula: "CEFIX-0010", nombre: "Jose Eduardo Andrade Suarez",    maxBoletos: 4 },
+      { codigo: "F",  matricula: "CEFIX-0011", nombre: "Job Abraham Estrella Durán",     maxBoletos: 4 },
+      { codigo: "G",  matricula: "CEFIX-0012", nombre: "Daniel Aaron Asistente Avila",   maxBoletos: 4 },
+      { codigo: "H",  matricula: "CEFIX-0014", nombre: "Dafne Lorena Delgado Luna",      maxBoletos: 4 },
+      { codigo: "I",  matricula: "CEFIX-0015", nombre: "Josue Leonardo Oliva Salas",     maxBoletos: 4 },
+      { codigo: "J",  matricula: "CEFIX-0016", nombre: "Cesar Emiliano Cuevas Morales",  maxBoletos: 4 },
+      { codigo: "K",  matricula: "CEFIX-0017", nombre: "Angel Omar Minor Arzate",        maxBoletos: 4 },
+      { codigo: "L",  matricula: "CEFIX-0018", nombre: "Gael Eduardo Alatriste de Lira", maxBoletos: 4 },
+      { codigo: "M",  matricula: "CEFIX-0019", nombre: "Milan Jesus Torres Lara",        maxBoletos: 4 },
+      { codigo: "N",  matricula: "CEFIX-0024", nombre: "Mextli Yaretzi Beltrán Loya",    maxBoletos: 4 },
+      { codigo: "O",  matricula: "CEFIX-0025", nombre: "Brisa Naydelin Salinas Rodriguez", maxBoletos: 4 },
+      { codigo: "P",  matricula: "CEFIX-0026", nombre: "Dania Maria Jimenez Espinoza",   maxBoletos: 4 },
+      { codigo: "Q",  matricula: "CEFIX-0027", nombre: "Derek Favela Lemus",             maxBoletos: 4 },
+      { codigo: "R",  matricula: "CEFIX-0030", nombre: "Aleydis Sugey Servin Tlazalo",   maxBoletos: 4 },
+      { codigo: "S",  matricula: "CEFIX-0031", nombre: "Luis Emiliano López Meza",       maxBoletos: 4 },
+      { codigo: "T",  matricula: "CEFIX-0033", nombre: "Emmanuel Dominguez Garcia",      maxBoletos: 4 },
+      { codigo: "U",  matricula: "CEFIX-0035", nombre: "Aret Amairany Martinez Leal",    maxBoletos: 4 },
+
+      // --- INTEGRANTES NUEVOS PAIDI (7 BOLETOS) ---
+      { codigo: "V",  matricula: "PAIDI-40", nombre: "Miguel Enrique González Ramírez",  maxBoletos: 7 },
+      { codigo: "W",  matricula: "PAIDI-41", nombre: "David Esau Valdez Monreal",        maxBoletos: 7 },
+      { codigo: "X",  matricula: "PAIDI-42", nombre: "Girhel Lizbeth Arreola López",     maxBoletos: 7 },
+      { codigo: "Y",  matricula: "PAIDI-43", nombre: "Angel Said Flores Robles",           maxBoletos: 7 },
+      { codigo: "Z",  matricula: "PAIDI-44", nombre: "Eduardo Alejandro Diaz Apodaca",   maxBoletos: 7 },
+      { codigo: "AA", matricula: "PAIDI-45", nombre: "Carlos Yahel Ontiveros Herrera",   maxBoletos: 7 },
+      { codigo: "AB", matricula: "PAIDI-46", nombre: "Aylin Zoe Torres Reveles",         maxBoletos: 7 },
+      { codigo: "AC", matricula: "PAIDI-47", nombre: "Daniel Ivan Flores Avila",         maxBoletos: 7 },
+      { codigo: "AD", matricula: "PAIDI-48", nombre: "Julian Hernandez Alonso",          maxBoletos: 7 },
+      { codigo: "AE", matricula: "PAIDI-49", nombre: "María Fernanda Cisneros Ramírez",  maxBoletos: 7 },
+      { codigo: "AF", matricula: "PAIDI-50", nombre: "Omar Fernández López",             maxBoletos: 7 },
+      { codigo: "AG", matricula: "PAIDI-51", nombre: "Valeria Rosales Prado",            maxBoletos: 7 },
+      { codigo: "AH", matricula: "PAIDI-52", nombre: "Sara Naomi Rodríguez Reyes",       maxBoletos: 7 },
+      { codigo: "AI", matricula: "PAIDI-53", nombre: "Johana Valeria Domínguez Sosa",    maxBoletos: 7 }
+    ];
+
+    const canvas = document.getElementById('lienzoBoleto');
+    const ctx = canvas.getContext('2d');
+    const selectVendedor = document.getElementById('vendedor');
+    const selectNumero = document.getElementById('numero');
+
+    // Llenamos el selector de vendedores
+    VENDEDORES.forEach((v, index) => {
+      const opcion = document.createElement('option');
+      opcion.value = index;
+      opcion.textContent = `${v.codigo} — ${v.nombre} (${v.matricula})`;
+      selectVendedor.appendChild(opcion);
+    });
+
+    // Actualiza el límite de boletos (4 o 7) según el vendedor elegido
+    function actualizarNumeros() {
+      const vendedor = VENDEDORES[selectVendedor.value];
+      selectNumero.innerHTML = "";
+      for (let i = 1; i <= vendedor.maxBoletos; i++) {
+        const opcion = document.createElement('option');
+        opcion.value = i;
+        opcion.textContent = i;
+        selectNumero.appendChild(opcion);
+      }
+    }
+    actualizarNumeros(); // Carga inicial
+
+    // Plantilla opcional (si colocas plantilla.png con los logos y cohete de fondo)
+    let plantillaCargada = false;
+    const imagenFondo = new Image();
+    imagenFondo.src = "plantilla.png";
+    imagenFondo.onload = () => { plantillaCargada = true; };
+
+    let ultimoFolio = "";
+    let ultimoNombre = "";
+    let ultimoTelefonoLimpio = "";
+
+    function formatearTelefono(numeroLimpio) {
+      return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+    }
+
+    async function generarBoleto() {
+      if (!document.getElementById('aceptoTyc').checked) {
+        alert("Es necesario aceptar los Términos y Condiciones para emitir el boleto.");
+        return;
+      }
+
+      const vendedor = VENDEDORES[selectVendedor.value];
+      const numero = selectNumero.value;
+      const nombre = document.getElementById('nombre').value.trim();
+      const telefonoLimpio = document.getElementById('telefono').value.replace(/\D/g, '');
+
+      if (!nombre || telefonoLimpio.length !== 10) {
+        alert("Por favor ingresa el nombre del titular y un teléfono válido de 10 dígitos.");
+        return;
+      }
+
+      if (URL_SCRIPT === "PEGA_AQUI_TU_URL_DE_GOOGLE_APPS_SCRIPT") {
+        alert("Falta pegar tu URL real de Google Apps Script en el código.");
+        return;
+      }
+
+      const boton = document.querySelector('.btn-generar');
+      boton.disabled = true;
+      boton.textContent = "Registrando en FiDEICO...";
+
+      const folio = vendedor.codigo + numero;
+      const telefonoFormateado = formatearTelefono(telefonoLimpio);
+      const vendedorRegistro = `${vendedor.nombre} (${vendedor.matricula})`;
+
+      try {
+        // 1. Registro en Google Sheets
+        const respuesta = await fetch(URL_SCRIPT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            folio: folio,
+            vendedor: vendedorRegistro,
+            nombre: nombre.toUpperCase(),
+            telefono: telefonoFormateado
+          })
+        });
+
+        const resultado = await respuesta.json();
+        if (!resultado.ok) {
+          alert("⚠️ " + resultado.mensaje);
+          return;
+        }
+
+        // 2. Dibujado del boleto estilo FiDEICO | CEFIX
+        await document.fonts.ready;
+
+        ultimoFolio = folio;
+        ultimoNombre = nombre.toUpperCase();
+        ultimoTelefonoLimpio = telefonoLimpio;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (plantillaCargada) {
+          ctx.drawImage(imagenFondo, 0, 0, canvas.width, canvas.height);
+        } else {
+          // Fondo blanco puro
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Franja lateral izquierda azul (#0500ff)
+          ctx.fillStyle = "#0500ff";
+          ctx.fillRect(0, 0, 32, canvas.height);
+
+          // Franja inferior (azul izquierda, negra derecha)
+          ctx.fillStyle = "#0500ff";
+          ctx.fillRect(0, canvas.height - 14, canvas.width * 0.78, 14);
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(canvas.width * 0.78, canvas.height - 14, canvas.width * 0.22, 14);
+
+          // Recuadro de precio ($100.00 MXN) abajo a la derecha
+          ctx.strokeStyle = "#000000";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.roundRect(720, 420, 310, 110, 12);
+          ctx.stroke();
+
+          ctx.font = "800 52px 'Blinker', sans-serif";
+          ctx.fillStyle = "#000000";
+          ctx.fillText("$100.00", 738, 488);
+          ctx.font = "800 22px 'Inter', sans-serif";
+          ctx.fillText("MXN", 942, 488);
+          ctx.font = "italic 700 14px 'Inter', sans-serif";
+          ctx.fillText("(CIEN PESOS 00/100 M. N.)", 805, 514);
+        }
+
+        // --- TEXTOS DEL BOLETO ---
+        // Título principal
+        ctx.font = "800 68px 'Blinker', sans-serif";
+        ctx.fillStyle = "#000000";
+        ctx.fillText("HORA DE VUELO", 68, 102);
+
+        // Subtítulo cursiva
+        ctx.font = "italic 400 28px 'Inter', sans-serif";
+        ctx.fillStyle = "#000000";
+        ctx.fillText("Actividad Recaudatoria AR°8", 68, 142);
+
+        // Folio grande arriba a la derecha (azul #0500ff)
+        ctx.font = "800 120px 'Blinker', sans-serif";
+        ctx.fillStyle = "#0500ff";
+        ctx.textAlign = "right";
+        ctx.fillText(ultimoFolio, 1025, 130);
+        ctx.textAlign = "left";
+
+        // Vendedor
+        ctx.font = "italic 400 20px 'Inter', sans-serif";
+        ctx.fillStyle = "#000000";
+        ctx.fillText("Vendedor", 68, 195);
+
+        ctx.font = "700 32px 'Blinker', sans-serif";
+        ctx.fillText(`${vendedor.nombre.toUpperCase()} (${vendedor.matricula})`, 68, 232);
+
+        // Organizador
+        ctx.font = "italic 400 20px 'Inter', sans-serif";
+        ctx.fillText("Organizador", 68, 285);
+
+        ctx.font = "700 32px 'Blinker', sans-serif";
+        ctx.fillText("FiDEICO | CEFIX", 68, 322);
+
+        // Titular del Boleto
+        ctx.font = "italic 400 26px 'Inter', sans-serif";
+        ctx.fillText("Titular del Boleto", 68, 390);
+
+        ctx.font = "700 44px 'Blinker', sans-serif";
+        ctx.fillText(ultimoNombre, 68, 442);
+
+        // Teléfono XXX XXX XXXX
+        ctx.font = "italic 400 28px 'Inter', sans-serif";
+        ctx.fillText("TEL. " + telefonoFormateado, 68, 485);
+
+        // Pie de boleto
+        ctx.font = "700 17px 'Inter', sans-serif";
+        ctx.fillText("EMISORA DE BOLETAJE Y COMPROBANTES | FiDEICO", 68, 535);
+
+        document.getElementById('panelAcciones').style.display = "flex";
+
+      } catch (error) {
+        alert("Error de conexión con Google Sheets. Verifica tu URL (/exec) y los permisos.");
+      } finally {
+        boton.disabled = false;
+        boton.textContent = "Generar Boleto ($100.00 MXN)";
+      }
+    }
+
+    function descargarImagen() {
+      const enlace = document.createElement('a');
+      enlace.download = `Boleto_FiDEICO_${ultimoFolio}.png`;
+      enlace.href = canvas.toDataURL("image/png");
+      enlace.click();
+    }
+
+    function abrirWhatsApp() {
+      const mensaje = `¡Hola ${ultimoNombre}! Aquí tienes tu comprobante oficial de la Rifa *HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX) con folio *${ultimoFolio}*. ¡Mucha suerte!`;
+      const url = `https://wa.me/52${ultimoTelefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+
+</body>
+</html>
