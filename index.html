@@ -381,7 +381,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
     }
 
-    /* 4. BOTÓN VENDER OTRO BOLETO */
+    /* 4. BOTÓN VENDER OTRO BOLETO / GENERAR OTRO BOLETO */
     .btn-otro {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38));
       border: 1px solid rgba(255, 255, 255, 0.85);
@@ -435,7 +435,31 @@
       max-width: 440px;
     }
 
-    /* VISTA PREVIA DEL BOLETO VERTICAL (BORDE NEGRO Y PUNTAS REDONDEADAS) */
+    /* MARCO LIQUID GLASS TRANSPARENTE PARA EL BOLETO */
+    .marco-boleto-glass {
+      width: 100%;
+      max-width: 440px;
+      padding: 18px;
+      border-radius: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.48) 0%,
+        rgba(255, 255, 255, 0.22) 100%
+      );
+      backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+      -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.45),
+        inset 0 0 24px rgba(255, 255, 255, 0.25);
+    }
+
+    /* VISTA PREVIA DEL BOLETO VERTICAL */
     canvas {
       max-width: 100%;
       width: 360px;
@@ -628,7 +652,6 @@
       background: linear-gradient(90deg, transparent, #ffd700, #fff4b8, #d4af37);
       animation: barraCargaOro 1.4s ease-in-out infinite;
     }
-
   </style>
 </head>
 <body>
@@ -707,8 +730,10 @@
       <button type="button" class="btn-ayuda" onclick="solicitarAyuda()">¿Error al llenar un boleto? Solicitar ayuda</button>
     </div>
 
-    <!-- VISTA PREVIA DEL BOLETO (898x1920) -->
-    <canvas id="lienzoBoleto" class="oculto" width="898" height="1920"></canvas>
+    <!-- MARCO TRANSPARENTE PARA EL BOLETO -->
+    <div id="marcoBoleto" class="marco-boleto-glass oculto">
+      <canvas id="lienzoBoleto" width="898" height="1920"></canvas>
+    </div>
 
     <!-- BOTONES DE ENTREGA -->
     <div class="acciones" id="panelAcciones">
@@ -725,7 +750,7 @@
     <p class="leyenda-cargo">Sistema administrado y operado a cargo de <strong>FiDEICO</strong>.</p>
   </footer>
 
-<!-- PANTALLA DORADA DE MAQUINADO -->
+  <!-- PANTALLA DORADA DE MAQUINADO -->
   <div id="overlayMaquinando" class="overlay-maquinando oculto">
     <div class="tarjeta-maquinando">
       <div class="boleto-scan">
@@ -765,6 +790,27 @@
     let ultimoNombre = "";
     let ultimoTelefonoLimpio = "";
     let ultimoUrlPdf = "";
+    let boletoListoParaOtro = false;
+
+    function activarModoOtroBoleto(activo) {
+      const boton = document.getElementById('btnGenerar');
+      boletoListoParaOtro = activo;
+      if (activo) {
+        boton.textContent = "Generar otro boleto";
+        boton.classList.remove('btn-generar');
+        boton.classList.add('btn-otro');
+      } else {
+        boton.textContent = "Generar Boleto ($100.00 MXN)";
+        boton.classList.remove('btn-otro');
+        boton.classList.add('btn-generar');
+      }
+    }
+
+    selectNumero.addEventListener('change', () => {
+      if (boletoListoParaOtro) {
+        activarModoOtroBoleto(false);
+      }
+    });
 
     function formatearTelefono(numeroLimpio) {
       return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
@@ -806,7 +852,7 @@
       const inicioY = centroY - ((lineas.length - 1) * interlineado) / 2;
 
       ctx.font = `800 ${tam}px 'Blinker', sans-serif`;
-      ctx.fillStyle = "#ffffff"; // Blanco para resaltar sobre el cuadro negro
+      ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
@@ -864,7 +910,7 @@
         document.getElementById('metaVendedorActivo').textContent = `CÓDIGO ${vendedorActivo.codigo}  |  ${vendedorActivo.matricula}`;
         document.getElementById('panelLogin').classList.add('oculto');
         document.getElementById('panelEmisor').classList.remove('oculto');
-        canvas.classList.remove('oculto');
+        document.getElementById('marcoBoleto').classList.remove('oculto');
 
         actualizarNumeros();
       } catch (err) {
@@ -880,12 +926,13 @@
       pinActivo = "";
       foliosVendidos = [];
       foliosEnRevision = [];
+      activarModoOtroBoleto(false);
       document.getElementById('loginPin').value = "";
       document.getElementById('nombre').value = "";
       document.getElementById('telefono').value = "";
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       document.getElementById('panelEmisor').classList.add('oculto');
-      canvas.classList.add('oculto');
+      document.getElementById('marcoBoleto').classList.add('oculto');
       document.getElementById('panelAcciones').style.display = "none";
       document.getElementById('panelLogin').classList.remove('oculto');
     }
@@ -942,13 +989,18 @@
       if (vendidosPropios >= vendedorActivo.maxBoletos) {
         panelCompletado.classList.remove('oculto');
         btnVenderOtro.classList.add('oculto');
+        boletoListoParaOtro = false;
         btnGenerar.disabled = true;
+        btnGenerar.classList.remove('btn-otro');
+        btnGenerar.classList.add('btn-generar');
         btnGenerar.textContent = "Todos tus boletos han sido vendidos";
       } else {
         panelCompletado.classList.add('oculto');
         btnVenderOtro.classList.remove('oculto');
         btnGenerar.disabled = false;
-        btnGenerar.textContent = "Generar Boleto ($100.00 MXN)";
+        if (!boletoListoParaOtro) {
+          btnGenerar.textContent = "Generar Boleto ($100.00 MXN)";
+        }
       }
     }
 
@@ -957,6 +1009,7 @@
       document.getElementById('telefono').value = "";
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       document.getElementById('panelAcciones').style.display = "none";
+      activarModoOtroBoleto(false);
       document.getElementById('panelEmisor').scrollIntoView({ behavior: 'smooth', block: 'start' });
       document.getElementById('nombre').focus();
     }
@@ -1014,6 +1067,11 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
     }
 
     async function generarBoleto() {
+      if (boletoListoParaOtro) {
+        venderOtroBoleto();
+        return;
+      }
+
       if (!document.getElementById('aceptoTyc').checked) {
         alert("Es necesario aceptar los Términos y Condiciones para emitir el boleto.");
         return;
@@ -1035,26 +1093,19 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
       }
 
       const boton = document.getElementById('btnGenerar');
+      const overlay = document.getElementById('overlayMaquinando');
+      const textoOro = document.getElementById('textoEstadoOro');
+      const subtextoOro = document.getElementById('subtextoEstadoOro');
+
       boton.disabled = true;
       boton.textContent = "Generando PDF y subiendo a FiDEICO...";
+      textoOro.textContent = `MAQUINANDO ${folio}`;
+      subtextoOro.textContent = "Grabando folio y generando PDF...";
+      overlay.classList.remove('oculto');
 
-      const overlay = document.getElementById('overlayMaquinando');
-     const textoOro = document.getElementById('textoEstadoOro');
-     const subtextoOro = document.getElementById('subtextoEstadoOro');
-     textoOro.textContent = `MAQUINANDO ${folio}`;
-     subtextoOro.textContent = "Grabando folio y generando PDF...";
-     overlay.classList.remove('oculto');
-     
       const telefonoFormateado = formatearTelefono(telefonoLimpio);
 
       try {
-        // Fuerza la descarga de Blinker e Inter antes de dibujar en el canvas
-        await Promise.all([
-          document.fonts.load("800 64px 'Blinker'"),
-          document.fonts.load("800 88px 'Blinker'"),
-          document.fonts.load("500 20px 'Inter'"),
-          document.fonts.load("italic 500 19px 'Inter'")
-        ]);
         await document.fonts.ready;
 
         ultimoFolio = folio;
@@ -1080,21 +1131,21 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
         dibujarNombreEnCaja(
           ctx,
           ultimoNombre,
-          W * 0.410, // Centro horizontal del área del nombre
-          H * 0.231, // Centro vertical exacto del cuadro negro
-          W * 0.55,  // Ancho máximo (deja margen a la izquierda y antes del cuadro verde)
-          H * 0.076, // Alto máximo (deja margen arriba y abajo dentro del cuadro negro)
-          82         // Tamaño máximo inicial (se encoge automático si el nombre es largo)
+          W * 0.410,
+          H * 0.231,
+          W * 0.55,
+          H * 0.076,
+          82
         );
 
         // 2. FOLIO EN EL CUADRO VERDE (Blinker ExtraBold, centrado exacto)
         dibujarTextoAjustado(
           ctx,
           ultimoFolio,
-          W * 0.8045, // Centro horizontal exacto del cuadro verde
-          H * 0.231,  // Centro vertical exacto del cuadro verde
-          W * 0.132,  // Ancho máximo dentro del cuadro verde
-          88,         // Tamaño inicial en px (se achica solo en AA1, AA10, etc.)
+          W * 0.8045,
+          H * 0.231,
+          W * 0.132,
+          88,
           "800",
           "'Blinker', sans-serif",
           "#ffffff",
@@ -1113,28 +1164,28 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
         dibujarTextoAjustado(
           ctx,
           textoVendedor,
-          W * 0.905, // Borde derecho exacto del cuadro negro
-          H * 0.298, // Misma altura que el teléfono
-          W * 0.50,  // Ancho máximo para no chocar con el teléfono
-          19,        // Tamaño inicial en px
+          W * 0.905,
+          H * 0.298,
+          W * 0.50,
+          19,
           "italic 500",
           "'Inter', sans-serif",
           "#000000",
           "right"
         );
 
-        // Generar PDF en formato VERTICAL (898 x 1920)
+        // Generar PDF en formato VERTICAL (898 x 1920) con compresión ágil
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'px',
           format: [W, H]
         });
-        pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, W, H);
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.82), 'JPEG', 0, 0, W, H);
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
 
         textoOro.textContent = "SUBIENDO A LA NUBE";
-     subtextoOro.textContent = "Registrando en FiDEICO y guardando PDF...";
+        subtextoOro.textContent = "Registrando en FiDEICO y guardando PDF...";
 
         const respuesta = await fetch(URL_SCRIPT, {
           method: "POST",
@@ -1159,14 +1210,17 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
         ultimoUrlPdf = resultado.urlPdf;
         foliosVendidos.push(folio);
         actualizarNumeros();
+        activarModoOtroBoleto(true);
         document.getElementById('panelAcciones').style.display = "flex";
 
       } catch (error) {
         alert("Detalle del error: " + error.message);
       } finally {
-        document.getElementById('overlayMaquinando').classList.add('oculto');
+        overlay.classList.add('oculto');
         boton.disabled = false;
-        boton.textContent = "Generar Boleto ($100.00 MXN)";
+        if (!boletoListoParaOtro) {
+          boton.textContent = "Generar Boleto ($100.00 MXN)";
+        }
       }
     }
 
@@ -1177,7 +1231,7 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
         unit: 'px',
         format: [canvas.width, canvas.height]
       });
-      pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.82), 'JPEG', 0, 0, canvas.width, canvas.height);
       pdf.save(`Boleto_FiDEICO_${ultimoFolio}.pdf`);
     }
 
