@@ -1233,26 +1233,23 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
     }
 
     function abrirWhatsApp() {
-      const mensaje = 
+      const mensaje =
 `Hola *${ultimoNombre}*,
 
 Aquí tienes tu comprobante oficial de la *Rifa JUÁREZ A LAS ALTURAS* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
 
 *Folio:* ${ultimoFolio}
-*Aportación:* $100.00 MXN
 *Descarga tu boleto oficial en PDF aquí:*
 ${ultimoUrlPdf}
 
-──────────────────
-*TÉRMINOS Y CONDICIONES*
-1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.
-2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.
-3. El premio consiste en una experiencia de vuelo de 30 minutos por Ciudad Juárez sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.
-4. Para reclamar el premio es indispensable presentar este comprobante electrónico con folio válido e identificación oficial.
-5. Los fondos recaudados se destinan íntegramente a proyectos de investigación y cohetería experimental de CEFIX.
-──────────────────
+Al participar en esta rifa, contribuyes al desarrollo de las actividades del Club de Cohetería Experimental CEFIX, impulsando la divulgación científica, el aprendizaje y el acercamiento de la sociedad, especialmente de niñas, niños y jóvenes, a la ciencia, la tecnología y la exploración espacial.
 
-Muchas gracias por apoyar a CEFIX y mucha suerte.`;
+Agradecemos especialmente a ViveVolando Academia de Vuelo por su confianza y colaboración para hacer posible esta iniciativa y permitirnos continuar llevando el conocimiento más allá de las aulas.
+
+¡Gracias por ser parte de este despegue! ✨🚀
+
+*Términos y Condiciones:*
+https://drive.google.com/file/d/1I38z-LxOnhz3AKTxoKuvpfa_a-Qpqv5u/view?usp=drive_link`;
 
       const url = `https://wa.me/52${ultimoTelefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
