@@ -126,16 +126,6 @@
       color: #333333;
       font-weight: 600;
     }
-    .btn-salir {
-      background: rgba(0, 0, 0, 0.78);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 8px 16px;
-      font-size: 12px;
-      border-radius: 12px;
-    }
 
     /* CHIPS DE BOLETOS PÍLDORA */
     .estado-boletos {
@@ -157,13 +147,17 @@
         0 4px 12px rgba(0, 0, 0, 0.05),
         inset 1px 1px 1.5px rgba(255, 255, 255, 0.9);
     }
-    .chip.vendido {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.85), rgba(22, 163, 74, 0.75));
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      color: #ffffff;
+    .chip.revision {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(120deg, rgba(245, 158, 11, 0.92), rgba(251, 191, 36, 0.9), rgba(217, 119, 6, 0.92));
+      background-size: 250% 250%;
+      animation: flujoLiquido 5s ease infinite;
+      border: 1px solid rgba(254, 243, 199, 0.85);
+      color: #451a03;
       box-shadow:
-        0 6px 16px rgba(22, 163, 74, 0.32),
-        inset 1px 1px 2px rgba(255, 255, 255, 0.75);
+        0 6px 14px rgba(245, 158, 11, 0.32),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.7);
     }
 
     /* AVISO DE CORTE COMPLETO CRISTAL VERDE */
@@ -185,14 +179,6 @@
       font-size: 14px;
       color: #166534;
       font-weight: 700;
-    }
-    .btn-completado {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.92), rgba(22, 163, 74, 0.85));
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      color: #ffffff;
-      box-shadow:
-        0 8px 18px rgba(22, 163, 74, 0.28),
-        inset 1px 1px 2px rgba(255, 255, 255, 0.55);
     }
 
     label {
@@ -264,8 +250,31 @@
     }
     .check-tyc input { width: 16px; height: 16px; accent-color: #0500ff; }
 
-    /* BOTONES TIPO PÍLDORA LIQUID GLASS */
+    /* =========================================================
+       BOTONES LIQUID GLASS + EFECTO PUSH SQUISH HACIA ADENTRO
+       ========================================================= */
+    @keyframes flujoLiquido {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes destelloCristal {
+      0% { left: -120%; }
+      35%, 100% { left: 140%; }
+    }
+
+    @keyframes reboteSlime {
+      0%   { transform: scale(0.85, 0.82) translateY(3px); }
+      35%  { transform: scale(1.06, 1.05) translateY(-1px); }
+      62%  { transform: scale(0.96, 0.97) translateY(1px); }
+      82%  { transform: scale(1.02, 1.01) translateY(0); }
+      100% { transform: scale(1, 1) translateY(0); }
+    }
+
     button {
+      position: relative;
+      overflow: hidden;
       padding: 14px 20px;
       border-radius: 999px;
       font-family: 'Inter', sans-serif;
@@ -274,15 +283,58 @@
       cursor: pointer;
       backdrop-filter: blur(16px) saturate(160%);
       -webkit-backdrop-filter: blur(16px) saturate(160%);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      transition:
+        transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
     }
-    button:hover { transform: translateY(-1.5px); opacity: 0.96; }
-    button:active { transform: scale(0.98); }
-    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
+    button::before {
+      content: none;
+    }
+
+    button:hover {
+      transform: scale(1.02) translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    button.slime-bounce {
+      animation: reboteSlime 0.52s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    button:active {
+      animation: none;
+      transform: scale(0.85, 0.82) translateY(3px);
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+      filter: brightness(0.94);
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.14),
+        inset 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    button:disabled,
+    button:disabled::after {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      animation: none;
+    }
+
+    /* 1. BOTONES AZULES (Ingresar, Generar Boleto, WhatsApp) */
     .btn-generar, .btn-whatsapp {
-      background: linear-gradient(135deg, rgba(5, 0, 255, 0.82), rgba(5, 0, 255, 0.68));
-      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: linear-gradient(
+        120deg,
+        rgba(5, 0, 255, 0.88),
+        rgba(0, 140, 255, 0.82),
+        rgba(45, 30, 255, 0.9),
+        rgba(5, 0, 255, 0.88)
+      );
+      background-size: 250% 250%;
+      animation: flujoLiquido 6s ease infinite;
+      border: 1px solid rgba(255, 255, 255, 0.48);
       color: #ffffff;
       box-shadow:
         0 10px 24px rgba(5, 0, 255, 0.28),
@@ -290,22 +342,87 @@
         inset -1px -1px 2px rgba(0, 0, 0, 0.15);
     }
 
+    /* 2. BOTÓN VERDE (Corte Completo) Y CHIPS VENDIDOS */
+    .btn-completado, .chip.vendido {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(
+        120deg,
+        rgba(22, 163, 74, 0.88),
+        rgba(52, 211, 153, 0.85),
+        rgba(16, 185, 129, 0.9),
+        rgba(22, 163, 74, 0.88)
+      );
+      background-size: 250% 250%;
+      animation: flujoLiquido 6s ease infinite;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      color: #ffffff;
+      box-shadow:
+        0 8px 18px rgba(22, 163, 74, 0.28),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.55);
+    }
+
+    /* 3. BOTONES OSCUROS (Descargar PDF y Salir) */
     .btn-descargar {
-      background: linear-gradient(135deg, rgba(20, 20, 20, 0.82), rgba(0, 0, 0, 0.68));
+      background: linear-gradient(135deg, rgba(20, 20, 20, 0.84), rgba(0, 0, 0, 0.72));
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: #ffffff;
       box-shadow:
         0 10px 24px rgba(0, 0, 0, 0.18),
         inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.35);
     }
+    .btn-salir {
+      background: rgba(0, 0, 0, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 8px 16px;
+      font-size: 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+    }
 
+    /* 4. BOTÓN VENDER OTRO BOLETO */
     .btn-otro {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.35));
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38));
       border: 1px solid rgba(255, 255, 255, 0.85);
       color: #000000;
       box-shadow:
         0 8px 20px rgba(0, 0, 0, 0.06),
         inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.95);
+    }
+
+    /* 5. BOTÓN DISCRETO DE SOLICITAR AYUDA */
+    .btn-ayuda {
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      color: #222222;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px 18px;
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.04),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.85);
+    }
+
+    /* DESTELLO DE CRISTAL DIAGONAL */
+    .btn-generar::after,
+    .btn-whatsapp::after,
+    .btn-completado::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.35),
+        transparent
+      );
+      transform: skewX(-25deg);
+      animation: destelloCristal 4.5s ease-in-out infinite;
+      pointer-events: none;
     }
 
     .oculto { display: none !important; }
@@ -318,13 +435,15 @@
       max-width: 440px;
     }
 
+    /* VISTA PREVIA DEL BOLETO VERTICAL (BORDE NEGRO Y PUNTAS REDONDEADAS) */
     canvas {
       max-width: 100%;
-      width: 680px;
-      border: 2px solid rgba(255, 255, 255, 0.85);
+      width: 360px;
+      height: auto;
+      border: none;
       border-radius: 18px;
       background-color: #ffffff;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
     }
 
     /* PIE INSTITUCIONAL (FiDEICO ARRIBA, CEFIX ABAJO) */
@@ -378,74 +497,138 @@
       font-weight: 700;
       color: #000000;
     }
-    /* ANIMACIONES DE COLOR LÍQUIDO Y DESTELLO DE CRISTAL */
-    @keyframes flujoLiquido {
+
+    /* =========================================================
+       ANIMACIÓN DORADA DE MAQUINADO Y SUBIDA A LA NUBE
+       ========================================================= */
+    @keyframes brilloDorado {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    @keyframes destelloCristal {
-      0% { left: -120%; }
-      35%, 100% { left: 140%; }
+    @keyframes escanerLaser {
+      0%   { top: 6%; opacity: 0.4; }
+      50%  { top: 88%; opacity: 1; }
+      100% { top: 6%; opacity: 0.4; }
     }
 
-    /* Botones Azules (Ingresar, Generar, WhatsApp) */
-    .btn-generar, .btn-whatsapp {
+    @keyframes pulsoOro {
+      0%, 100% { box-shadow: 0 0 22px rgba(255, 215, 0, 0.25), inset 0 0 18px rgba(255, 215, 0, 0.15); }
+      50%      { box-shadow: 0 0 42px rgba(255, 215, 0, 0.55), inset 0 0 28px rgba(255, 235, 150, 0.3); }
+    }
+
+    @keyframes barraCargaOro {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+
+    .overlay-maquinando {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(8, 10, 18, 0.72);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+    }
+
+    .tarjeta-maquinando {
+      width: 100%;
+      max-width: 340px;
+      padding: 28px 24px;
+      border-radius: 28px;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(24, 22, 18, 0.92), rgba(12, 11, 9, 0.96));
+      border: 1.5px solid rgba(255, 215, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: pulsoOro 2.4s ease-in-out infinite;
+    }
+
+    /* Silueta del boleto maquinándose */
+    .boleto-scan {
       position: relative;
+      width: 96px;
+      height: 150px;
+      border-radius: 14px;
+      border: 2px solid rgba(255, 215, 0, 0.7);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), rgba(255, 240, 170, 0.26), rgba(184, 134, 11, 0.12));
+      background-size: 220% 220%;
+      animation: brilloDorado 3s ease infinite;
       overflow: hidden;
-      background: linear-gradient(
-        120deg,
-        rgba(5, 0, 255, 0.88),
-        rgba(0, 140, 255, 0.82),
-        rgba(45, 30, 255, 0.9),
-        rgba(5, 0, 255, 0.88)
-      );
-      background-size: 250% 250%;
-      animation: flujoLiquido 5s ease infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    /* Botón Verde (Corte Completo) y Chips Vendidos */
-    .btn-completado, .chip.vendido {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(
-        120deg,
-        rgba(22, 163, 74, 0.88),
-        rgba(52, 211, 153, 0.85),
-        rgba(16, 185, 129, 0.9),
-        rgba(22, 163, 74, 0.88)
-      );
-      background-size: 250% 250%;
-      animation: flujoLiquido 2s ease infinite;
+    /* Líneas simulando grabado del boleto */
+    .boleto-scan span {
+      display: block;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 223, 100, 0.35);
     }
+    .boleto-scan span:nth-child(1) { width: 64%; }
+    .boleto-scan span:nth-child(2) { width: 46%; }
+    .boleto-scan span:nth-child(3) { width: 72%; height: 22px; border-radius: 6px; }
+    .boleto-scan span:nth-child(4) { width: 52%; }
 
-    /* Reflejo diagonal de luz pasando por los botones */
-    .btn-generar::after,
-    .btn-whatsapp::after,
-    .btn-completado::after {
-      content: "";
+    /* Haz láser dorado subiendo y bajando */
+    .laser-dorado {
       position: absolute;
-      top: 0;
-      left: -120%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.35),
-        transparent
-      );
-      transform: skewX(-25deg);
-      animation: destelloCristal 4.5s ease-in-out infinite;
-      pointer-events: none;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #fff7c2, #ffd700, #fff7c2, transparent);
+      box-shadow: 0 0 14px 3px rgba(255, 215, 0, 0.9);
+      animation: escanerLaser 1.6s ease-in-out infinite;
     }
 
-    /* Pausa la animación si el botón está deshabilitado */
-    button:disabled,
-    button:disabled::after {
-      animation: none;
+    .titulo-oro {
+      margin: 0;
+      font-family: 'Blinker', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(120deg, #b8860b, #ffd700, #fff4b8, #d4af37, #ffd700);
+      background-size: 250% 250%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: brilloDorado 3s ease infinite;
     }
+
+    .subtitulo-oro {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 244, 198, 0.85);
+    }
+
+    .barra-oro-fondo {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 215, 0, 0.16);
+      overflow: hidden;
+    }
+
+    .barra-oro-flujo {
+      width: 45%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, #ffd700, #fff4b8, #d4af37);
+      animation: barraCargaOro 1.4s ease-in-out infinite;
+    }
+
   </style>
 </head>
 <body>
@@ -521,10 +704,11 @@
       </label>
 
       <button class="btn-generar" id="btnGenerar" onclick="generarBoleto()">Generar Boleto ($100.00 MXN)</button>
+      <button type="button" class="btn-ayuda" onclick="solicitarAyuda()">¿Error al llenar un boleto? Solicitar ayuda</button>
     </div>
 
-    <!-- VISTA PREVIA DEL BOLETO -->
-    <canvas id="lienzoBoleto" class="oculto" width="1080" height="600"></canvas>
+    <!-- VISTA PREVIA DEL BOLETO (898x1920) -->
+    <canvas id="lienzoBoleto" class="oculto" width="898" height="1920"></canvas>
 
     <!-- BOTONES DE ENTREGA -->
     <div class="acciones" id="panelAcciones">
@@ -541,6 +725,24 @@
     <p class="leyenda-cargo">Sistema administrado y operado a cargo de <strong>FiDEICO</strong>.</p>
   </footer>
 
+<!-- PANTALLA DORADA DE MAQUINADO -->
+  <div id="overlayMaquinando" class="overlay-maquinando oculto">
+    <div class="tarjeta-maquinando">
+      <div class="boleto-scan">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <div class="laser-dorado"></div>
+      </div>
+      <h3 class="titulo-oro" id="textoEstadoOro">MAQUINANDO BOLETO</h3>
+      <p class="subtitulo-oro" id="subtextoEstadoOro">Grabando folio y datos oficiales...</p>
+      <div class="barra-oro-fondo">
+        <div class="barra-oro-flujo"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec";
     const TELEFONO_ADMIN = "6562784337";
@@ -552,6 +754,7 @@
     let vendedorActivo = null;
     let pinActivo = "";
     let foliosVendidos = [];
+    let foliosEnRevision = [];
 
     let plantillaCargada = false;
     const imagenFondo = new Image();
@@ -565,6 +768,65 @@
 
     function formatearTelefono(numeroLimpio) {
       return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+    }
+
+    // Ajusta el nombre en 1 o 2 líneas dentro del recuadro negro
+    function dibujarNombreEnCaja(ctx, texto, centroX, centroY, anchoMax, altoMax, tamInicial) {
+      let tam = tamInicial;
+      let lineas = [];
+
+      while (tam > 14) {
+        ctx.font = `800 ${tam}px 'Blinker', sans-serif`;
+        const palabras = texto.split(/\s+/);
+        lineas = [];
+        let lineaActual = palabras[0] || "";
+
+        for (let i = 1; i < palabras.length; i++) {
+          const prueba = lineaActual + " " + palabras[i];
+          if (ctx.measureText(prueba).width <= anchoMax) {
+            lineaActual = prueba;
+          } else {
+            lineas.push(lineaActual);
+            lineaActual = palabras[i];
+          }
+        }
+        lineas.push(lineaActual);
+
+        const interlineado = tam * 0.73;
+        const altoTotal = lineas.length * interlineado;
+        const cabeAncho = lineas.every(l => ctx.measureText(l).width <= anchoMax);
+
+        if (lineas.length <= 2 && cabeAncho && altoTotal <= altoMax) {
+          break;
+        }
+        tam -= 2;
+      }
+
+      const interlineado = tam * 0.73;
+      const inicioY = centroY - ((lineas.length - 1) * interlineado) / 2;
+
+      ctx.font = `800 ${tam}px 'Blinker', sans-serif`;
+      ctx.fillStyle = "#ffffff"; // Blanco para resaltar sobre el cuadro negro
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      lineas.forEach((linea, i) => {
+        ctx.fillText(linea, centroX, inicioY + i * interlineado);
+      });
+    }
+
+    // Ajusta una sola línea (Folio y Vendedor) para que siempre quepa en su ancho máximo
+    function dibujarTextoAjustado(ctx, texto, x, y, anchoMax, tamInicial, fuenteEstilo, fuenteFamilia, color, alineacion) {
+      let tam = tamInicial;
+      while (tam > 10) {
+        ctx.font = `${fuenteEstilo} ${tam}px ${fuenteFamilia}`;
+        if (ctx.measureText(texto).width <= anchoMax) break;
+        tam -= 1;
+      }
+      ctx.fillStyle = color;
+      ctx.textAlign = alineacion;
+      ctx.textBaseline = "middle";
+      ctx.fillText(texto, x, y);
     }
 
     async function iniciarSesion() {
@@ -596,6 +858,7 @@
         vendedorActivo = data.vendedor;
         pinActivo = pin;
         foliosVendidos = data.vendidos || [];
+        foliosEnRevision = data.enRevision || [];
 
         document.getElementById('nombreVendedorActivo').textContent = vendedorActivo.nombre.toUpperCase();
         document.getElementById('metaVendedorActivo').textContent = `CÓDIGO ${vendedorActivo.codigo}  |  ${vendedorActivo.matricula}`;
@@ -615,6 +878,8 @@
     function cerrarSesion() {
       vendedorActivo = null;
       pinActivo = "";
+      foliosVendidos = [];
+      foliosEnRevision = [];
       document.getElementById('loginPin').value = "";
       document.getElementById('nombre').value = "";
       document.getElementById('telefono').value = "";
@@ -640,6 +905,8 @@
       for (let i = 1; i <= vendedorActivo.maxBoletos; i++) {
         const folioActual = vendedorActivo.codigo + i;
         const estaVendido = foliosVendidos.includes(folioActual);
+        const estaEnRevision = foliosEnRevision.includes(folioActual);
+
         if (estaVendido) {
           vendidosPropios++;
         } else if (primerDisponible === null) {
@@ -648,13 +915,23 @@
 
         const opcion = document.createElement('option');
         opcion.value = i;
-        opcion.textContent = estaVendido ? `${folioActual} (Vendido)` : folioActual;
+        opcion.textContent = estaEnRevision
+          ? `${folioActual} (En revisión)`
+          : (estaVendido ? `${folioActual} (Vendido)` : folioActual);
         opcion.disabled = estaVendido;
         selectNumero.appendChild(opcion);
 
         const chip = document.createElement('div');
-        chip.className = estaVendido ? 'chip vendido' : 'chip';
-        chip.textContent = estaVendido ? `✓ ${folioActual}` : folioActual;
+        if (estaEnRevision) {
+          chip.className = 'chip revision';
+          chip.textContent = `⚠ ${folioActual}`;
+        } else if (estaVendido) {
+          chip.className = 'chip vendido';
+          chip.textContent = `✓ ${folioActual}`;
+        } else {
+          chip.className = 'chip';
+          chip.textContent = folioActual;
+        }
         contenedor.appendChild(chip);
       }
 
@@ -700,6 +977,42 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
       window.open(url, '_blank');
     }
 
+    async function solicitarAyuda() {
+      const folioError = prompt(
+        `¿Qué boleto tuvo el error? (Ej. ${vendedorActivo.codigo}1)`,
+        ultimoFolio || `${vendedorActivo.codigo}1`
+      );
+      if (!folioError) return;
+
+      const folioLimpio = folioError.trim().toUpperCase();
+
+      try {
+        await fetch(URL_SCRIPT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ accion: "reportar", folio: folioLimpio })
+        });
+        if (!foliosEnRevision.includes(folioLimpio)) {
+          foliosEnRevision.push(folioLimpio);
+          actualizarNumeros();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      const mensaje =
+`*SOLICITUD DE AYUDA — SORTEK (FiDEICO | CEFIX)*
+
+*Vendedor:* ${vendedorActivo.nombre.toUpperCase()}
+*Matrícula:* ${vendedorActivo.matricula} (Código ${vendedorActivo.codigo})
+*Boleto con error:* ${folioLimpio}
+
+Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión.`;
+
+      const url = `https://wa.me/52${TELEFONO_ADMIN}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+
     async function generarBoleto() {
       if (!document.getElementById('aceptoTyc').checked) {
         alert("Es necesario aceptar los Términos y Condiciones para emitir el boleto.");
@@ -725,99 +1038,103 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
       boton.disabled = true;
       boton.textContent = "Generando PDF y subiendo a FiDEICO...";
 
+      const overlay = document.getElementById('overlayMaquinando');
+     const textoOro = document.getElementById('textoEstadoOro');
+     const subtextoOro = document.getElementById('subtextoEstadoOro');
+     textoOro.textContent = `MAQUINANDO ${folio}`;
+     subtextoOro.textContent = "Grabando folio y generando PDF...";
+     overlay.classList.remove('oculto');
+     
       const telefonoFormateado = formatearTelefono(telefonoLimpio);
 
       try {
+        // Fuerza la descarga de Blinker e Inter antes de dibujar en el canvas
+        await Promise.all([
+          document.fonts.load("800 64px 'Blinker'"),
+          document.fonts.load("800 88px 'Blinker'"),
+          document.fonts.load("500 20px 'Inter'"),
+          document.fonts.load("italic 500 19px 'Inter'")
+        ]);
         await document.fonts.ready;
 
         ultimoFolio = folio;
         ultimoNombre = nombre;
         ultimoTelefonoLimpio = telefonoLimpio;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Resolución fija exacta 898 x 1920
+        canvas.width = 898;
+        canvas.height = 1920;
+        const W = canvas.width;
+        const H = canvas.height;
+
+        ctx.clearRect(0, 0, W, H);
 
         if (plantillaCargada) {
-          ctx.drawImage(imagenFondo, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(imagenFondo, 0, 0, W, H);
         } else {
           ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = "#0500ff";
-          ctx.fillRect(0, 0, 32, canvas.height);
-          ctx.fillStyle = "#0500ff";
-          ctx.fillRect(0, canvas.height - 14, canvas.width * 0.78, 14);
-          ctx.fillStyle = "#000000";
-          ctx.fillRect(canvas.width * 0.78, canvas.height - 14, canvas.width * 0.22, 14);
-
-          ctx.strokeStyle = "#000000";
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.roundRect(720, 420, 310, 110, 12);
-          ctx.stroke();
-
-          ctx.font = "800 46px 'Inter', sans-serif";
-          ctx.fillStyle = "#000000";
-          ctx.fillText("$100.00", 738, 486);
-          ctx.font = "800 20px 'Inter', sans-serif";
-          ctx.fillText("MXN", 944, 486);
-          ctx.font = "italic 700 13px 'Inter', sans-serif";
-          ctx.fillText("(CIEN PESOS 00/100 M. N.)", 805, 514);
+          ctx.fillRect(0, 0, W, H);
         }
 
-        // 1. TÍTULO DE LA RIFA (BLINKER)
-        ctx.font = "800 68px 'Blinker', sans-serif";
+        // 1. NOMBRE DEL TITULAR (Blinker ExtraBold, más grande y pegado, con margen de respeto)
+        dibujarNombreEnCaja(
+          ctx,
+          ultimoNombre,
+          W * 0.410, // Centro horizontal del área del nombre
+          H * 0.231, // Centro vertical exacto del cuadro negro
+          W * 0.55,  // Ancho máximo (deja margen a la izquierda y antes del cuadro verde)
+          H * 0.076, // Alto máximo (deja margen arriba y abajo dentro del cuadro negro)
+          82         // Tamaño máximo inicial (se encoge automático si el nombre es largo)
+        );
+
+        // 2. FOLIO EN EL CUADRO VERDE (Blinker ExtraBold, centrado exacto)
+        dibujarTextoAjustado(
+          ctx,
+          ultimoFolio,
+          W * 0.8045, // Centro horizontal exacto del cuadro verde
+          H * 0.231,  // Centro vertical exacto del cuadro verde
+          W * 0.132,  // Ancho máximo dentro del cuadro verde
+          88,         // Tamaño inicial en px (se achica solo en AA1, AA10, etc.)
+          "800",
+          "'Blinker', sans-serif",
+          "#ffffff",
+          "center"
+        );
+
+        // 3. TELÉFONO (Alineado al borde izquierdo del cuadro negro)
+        ctx.font = "500 20px 'Inter', sans-serif";
         ctx.fillStyle = "#000000";
-        ctx.fillText("HORA DE VUELO", 68, 102);
-
-        ctx.font = "italic 400 26px 'Inter', sans-serif";
-        ctx.fillText("Actividad Recaudatoria AR°8", 68, 142);
-
-        // 2. FOLIO DEL BOLETO (BLINKER)
-        ctx.font = "800 120px 'Blinker', sans-serif";
-        ctx.fillStyle = "#0500ff";
-        ctx.textAlign = "right";
-        ctx.fillText(ultimoFolio, 1025, 130);
         ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText("TEL. " + telefonoFormateado, W * 0.095, H * 0.298);
 
-        ctx.font = "italic 400 19px 'Inter', sans-serif";
-        ctx.fillStyle = "#000000";
-        ctx.fillText("Vendedor", 68, 195);
-        ctx.font = "700 26px 'Inter', sans-serif";
-        ctx.fillText(`${vendedorActivo.nombre.toUpperCase()} (${vendedorActivo.matricula})`, 68, 230);
+        // 4. VENDEDOR (Alineado al borde derecho del cuadro negro)
+        const textoVendedor = `VENDEDOR: ${vendedorActivo.nombre.toUpperCase()}`;
+        dibujarTextoAjustado(
+          ctx,
+          textoVendedor,
+          W * 0.905, // Borde derecho exacto del cuadro negro
+          H * 0.298, // Misma altura que el teléfono
+          W * 0.50,  // Ancho máximo para no chocar con el teléfono
+          19,        // Tamaño inicial en px
+          "italic 500",
+          "'Inter', sans-serif",
+          "#000000",
+          "right"
+        );
 
-        ctx.font = "italic 400 19px 'Inter', sans-serif";
-        ctx.fillText("Organizador", 68, 285);
-        ctx.font = "700 26px 'Inter', sans-serif";
-        ctx.fillText("FiDEICO | CEFIX", 68, 320);
-
-        ctx.font = "italic 400 24px 'Inter', sans-serif";
-        ctx.fillText("Titular del Boleto", 68, 390);
-
-        // 3. NOMBRE DEL TITULAR (BLINKER)
-        ctx.font = "700 44px 'Blinker', sans-serif";
-        ctx.fillText(ultimoNombre, 68, 442);
-
-        ctx.font = "italic 400 26px 'Inter', sans-serif";
-        ctx.fillText("TEL. " + telefonoFormateado, 68, 485);
-
-        ctx.font = "800 18px 'Inter', sans-serif";
-        ctx.fillStyle = "#0500ff";
-        ctx.fillText("SORTEK", 68, 532);
-        const anchoSortek = ctx.measureText("SORTEK").width;
-        ctx.fillStyle = "#000000";
-        ctx.fillText(" | FiDEICO", 68 + anchoSortek, 532);
-
-        ctx.font = "italic 400 14px 'Inter', sans-serif";
-        ctx.fillStyle = "#444444";
-        ctx.fillText("Sistema de Organización, Registro y Trazabilidad Electrónica de Boletos", 68, 554);
-
+        // Generar PDF en formato VERTICAL (898 x 1920)
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-          orientation: 'landscape',
+          orientation: 'portrait',
           unit: 'px',
-          format: [canvas.width, canvas.height]
+          format: [W, H]
         });
-        pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, W, H);
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+        textoOro.textContent = "SUBIENDO A LA NUBE";
+     subtextoOro.textContent = "Registrando en FiDEICO y guardando PDF...";
 
         const respuesta = await fetch(URL_SCRIPT, {
           method: "POST",
@@ -847,6 +1164,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
       } catch (error) {
         alert("Detalle del error: " + error.message);
       } finally {
+        document.getElementById('overlayMaquinando').classList.add('oculto');
         boton.disabled = false;
         boton.textContent = "Generar Boleto ($100.00 MXN)";
       }
@@ -855,7 +1173,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
     function descargarPDF() {
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({
-        orientation: 'landscape',
+        orientation: 'portrait',
         unit: 'px',
         format: [canvas.width, canvas.height]
       });
@@ -867,7 +1185,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
       const mensaje = 
 `Hola *${ultimoNombre}*,
 
-Aquí tienes tu comprobante oficial de la *Rifa HORA DE VUELO* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
+Aquí tienes tu comprobante oficial de la *Rifa JUÁREZ A LAS ALTURAS* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
 
 *Folio:* ${ultimoFolio}
 *Aportación:* $100.00 MXN
@@ -878,7 +1196,7 @@ ${ultimoUrlPdf}
 *TÉRMINOS Y CONDICIONES*
 1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.
 2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.
-3. El premio consiste en una experiencia de Hora de Vuelo / Piloto por un Día sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.
+3. El premio consiste en una experiencia de vuelo de 30 minutos por Ciudad Juárez sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.
 4. Para reclamar el premio es indispensable presentar este comprobante electrónico con folio válido e identificación oficial.
 5. Los fondos recaudados se destinan íntegramente a proyectos de investigación y cohetería experimental de CEFIX.
 ──────────────────
@@ -888,6 +1206,16 @@ Muchas gracias por apoyar a CEFIX y mucha suerte.`;
       const url = `https://wa.me/52${ultimoTelefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
+
+    // Efecto rebote slime al soltar cualquier botón
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('pointerup', () => {
+        if (btn.disabled) return;
+        btn.classList.remove('slime-bounce');
+        void btn.offsetWidth;
+        btn.classList.add('slime-bounce');
+      });
+    });
   </script>
 
 </body>
