@@ -739,9 +739,7 @@
     <div class="acciones" id="panelAcciones">
       <button class="btn-whatsapp" onclick="abrirWhatsApp()">1. Enviar por WhatsApp (Enlace PDF + TyC)</button>
       <button class="btn-descargar" onclick="descargarPDF()">2. Descargar copia en PDF</button>
-      <button class="btn-otro" id="btnVenderOtro" onclick="venderOtroBoleto()">3. Vender otro boleto</button>
     </div>
-  </main>
 
   <!-- PIE INSTITUCIONAL: FiDEICO + CEFIX + ADMINISTRACIÓN -->
   <footer class="pie-institucional">
@@ -796,7 +794,7 @@
       const boton = document.getElementById('btnGenerar');
       boletoListoParaOtro = activo;
       if (activo) {
-        boton.textContent = "Generar otro boleto";
+        boton.textContent = "Vender otro boleto";
         boton.classList.remove('btn-generar');
         boton.classList.add('btn-otro');
       } else {
@@ -941,8 +939,7 @@
       const contenedor = document.getElementById('estadoBoletos');
       const panelCompletado = document.getElementById('panelCompletado');
       const btnGenerar = document.getElementById('btnGenerar');
-      const btnVenderOtro = document.getElementById('btnVenderOtro');
-
+      
       selectNumero.innerHTML = "";
       contenedor.innerHTML = "";
 
@@ -996,7 +993,7 @@
         btnGenerar.textContent = "Todos tus boletos han sido vendidos";
       } else {
         panelCompletado.classList.add('oculto');
-        btnVenderOtro.classList.remove('oculto');
+        
         btnGenerar.disabled = false;
         if (!boletoListoParaOtro) {
           btnGenerar.textContent = "Generar Boleto ($100.00 MXN)";
