@@ -48,11 +48,7 @@
       align-items: center;
       padding: 18px 24px;
       border-radius: 28px;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.48) 0%,
-        rgba(255, 255, 255, 0.22) 100%
-      );
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.22) 100%);
       backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       border: 1px solid rgba(255, 255, 255, 0.72);
@@ -83,11 +79,7 @@
 
     /* PANEL PRINCIPAL LIQUID GLASS */
     .panel {
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.48) 0%,
-        rgba(255, 255, 255, 0.22) 100%
-      );
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.22) 100%);
       backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       border: 1px solid rgba(255, 255, 255, 0.72);
@@ -111,20 +103,52 @@
       align-items: center;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       padding-bottom: 12px;
-      gap: 10px;
+      gap: 8px;
+    }
+    .acciones-sesion {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
     }
     .info-vendedor strong {
       font-family: 'Inter', sans-serif;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       display: block;
       color: #000000;
       text-transform: uppercase;
     }
     .info-vendedor span {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #333333;
       font-weight: 600;
+    }
+
+    /* RESUMEN RÁPIDO DEL VENDEDOR */
+    .resumen-vendedor {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .dato-resumen {
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 14px;
+      padding: 8px 6px;
+      text-align: center;
+      box-shadow: inset 1px 1px 1.5px rgba(255, 255, 255, 0.85);
+    }
+    .dato-resumen strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 800;
+      color: #000000;
+    }
+    .dato-resumen span {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #444444;
+      text-transform: uppercase;
     }
 
     /* CHIPS DE BOLETOS PÍLDORA */
@@ -132,6 +156,12 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+    }
+    .ayuda-chips {
+      margin: -6px 0 0 0;
+      font-size: 11px;
+      color: #333333;
+      font-weight: 500;
     }
     .chip {
       padding: 7px 15px;
@@ -146,6 +176,13 @@
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.05),
         inset 1px 1px 1.5px rgba(255, 255, 255, 0.9);
+      transition: transform 0.15s ease;
+    }
+    .chip.vendido, .chip.revision {
+      cursor: pointer;
+    }
+    .chip.vendido:hover, .chip.revision:hover {
+      transform: scale(1.06);
     }
     .chip.revision {
       position: relative;
@@ -158,6 +195,43 @@
       box-shadow:
         0 6px 14px rgba(245, 158, 11, 0.32),
         inset 1px 1px 2px rgba(255, 255, 255, 0.7);
+    }
+
+    /* PANEL DE CONSULTA / REENVÍO DE BOLETO YA EMITIDO */
+    .panel-reenvio {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(5, 0, 255, 0.25);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+    .reenvio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .reenvio-header strong {
+      font-size: 14px;
+      color: #0500ff;
+    }
+    .reenvio-datos {
+      font-size: 12.5px;
+      color: #222222;
+      line-height: 1.45;
+    }
+    .reenvio-botones {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .reenvio-botones button {
+      padding: 10px 14px;
+      font-size: 13px;
     }
 
     /* AVISO DE CORTE COMPLETO CRISTAL VERDE */
@@ -236,9 +310,6 @@
       margin-top: 8px;
       color: #222222;
       line-height: 1.5;
-      max-height: 150px;
-      overflow-y: auto;
-      padding-right: 6px;
     }
     .check-tyc {
       display: flex;
@@ -292,9 +363,7 @@
         filter 0.2s ease;
     }
 
-    button::before {
-      content: none;
-    }
+    button::before { content: none; }
 
     button:hover {
       transform: scale(1.02) translateY(-1px);
@@ -323,15 +392,8 @@
       animation: none;
     }
 
-    /* 1. BOTONES AZULES (Ingresar, Generar Boleto, WhatsApp) */
     .btn-generar, .btn-whatsapp {
-      background: linear-gradient(
-        120deg,
-        rgba(5, 0, 255, 0.88),
-        rgba(0, 140, 255, 0.82),
-        rgba(45, 30, 255, 0.9),
-        rgba(5, 0, 255, 0.88)
-      );
+      background: linear-gradient(120deg, rgba(5, 0, 255, 0.88), rgba(0, 140, 255, 0.82), rgba(45, 30, 255, 0.9), rgba(5, 0, 255, 0.88));
       background-size: 250% 250%;
       animation: flujoLiquido 6s ease infinite;
       border: 1px solid rgba(255, 255, 255, 0.48);
@@ -342,17 +404,10 @@
         inset -1px -1px 2px rgba(0, 0, 0, 0.15);
     }
 
-    /* 2. BOTÓN VERDE (Corte Completo) Y CHIPS VENDIDOS */
     .btn-completado, .chip.vendido {
       position: relative;
       overflow: hidden;
-      background: linear-gradient(
-        120deg,
-        rgba(22, 163, 74, 0.88),
-        rgba(52, 211, 153, 0.85),
-        rgba(16, 185, 129, 0.9),
-        rgba(22, 163, 74, 0.88)
-      );
+      background: linear-gradient(120deg, rgba(22, 163, 74, 0.88), rgba(52, 211, 153, 0.85), rgba(16, 185, 129, 0.9), rgba(22, 163, 74, 0.88));
       background-size: 250% 250%;
       animation: flujoLiquido 6s ease infinite;
       border: 1px solid rgba(255, 255, 255, 0.55);
@@ -362,7 +417,6 @@
         inset 1px 1px 2px rgba(255, 255, 255, 0.55);
     }
 
-    /* 3. BOTONES OSCUROS (Descargar PDF y Salir) */
     .btn-descargar {
       background: linear-gradient(135deg, rgba(20, 20, 20, 0.84), rgba(0, 0, 0, 0.72));
       border: 1px solid rgba(255, 255, 255, 0.3);
@@ -371,17 +425,24 @@
         0 10px 24px rgba(0, 0, 0, 0.18),
         inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.35);
     }
+    .btn-salir, .btn-actualizar {
+      padding: 8px 13px;
+      font-size: 12px;
+      border-radius: 999px;
+    }
     .btn-salir {
       background: rgba(0, 0, 0, 0.82);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
-      padding: 8px 16px;
-      font-size: 12px;
-      border-radius: 999px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
     }
+    .btn-actualizar {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      color: #000000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    }
 
-    /* 4. BOTÓN VENDER OTRO BOLETO / GENERAR OTRO BOLETO */
     .btn-otro {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38));
       border: 1px solid rgba(255, 255, 255, 0.85);
@@ -391,7 +452,6 @@
         inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.95);
     }
 
-    /* 5. BOTÓN DISCRETO DE SOLICITAR AYUDA */
     .btn-ayuda {
       background: rgba(255, 255, 255, 0.45);
       border: 1px solid rgba(0, 0, 0, 0.14);
@@ -404,7 +464,6 @@
         inset 1px 1px 2px rgba(255, 255, 255, 0.85);
     }
 
-    /* DESTELLO DE CRISTAL DIAGONAL */
     .btn-generar::after,
     .btn-whatsapp::after,
     .btn-completado::after {
@@ -414,12 +473,7 @@
       left: -120%;
       width: 60%;
       height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.35),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
       transform: skewX(-25deg);
       animation: destelloCristal 4.5s ease-in-out infinite;
       pointer-events: none;
@@ -444,11 +498,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.48) 0%,
-        rgba(255, 255, 255, 0.22) 100%
-      );
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.22) 100%);
       backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       border: 1px solid rgba(255, 255, 255, 0.72);
@@ -459,7 +509,6 @@
         inset 0 0 24px rgba(255, 255, 255, 0.25);
     }
 
-    /* VISTA PREVIA DEL BOLETO VERTICAL */
     canvas {
       max-width: 100%;
       width: 360px;
@@ -470,7 +519,7 @@
       box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
     }
 
-    /* PIE INSTITUCIONAL (FiDEICO ARRIBA, CEFIX ABAJO) */
+    /* PIE INSTITUCIONAL */
     .pie-institucional {
       width: 100%;
       max-width: 440px;
@@ -480,11 +529,7 @@
       gap: 14px;
       padding: 20px 24px;
       border-radius: 28px;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.48) 0%,
-        rgba(255, 255, 255, 0.22) 100%
-      );
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.22) 100%);
       backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
       border: 1px solid rgba(255, 255, 255, 0.72);
@@ -495,32 +540,10 @@
         inset 0 0 24px rgba(255, 255, 255, 0.25);
       text-align: center;
     }
-    .logo-fideico {
-      width: 165px;
-      max-width: 100%;
-      height: auto;
-      object-fit: contain;
-    }
-    .logo-cefix {
-      width: 180px;
-      max-width: 100%;
-      height: auto;
-      object-fit: contain;
-      border-radius: 10px;
-    }
-    .leyenda-cargo {
-      margin: 0;
-      font-size: 11.5px;
-      font-weight: 500;
-      font-style: italic;
-      color: #333333;
-      line-height: 1.4;
-    }
-    .leyenda-cargo strong {
-      font-style: normal;
-      font-weight: 700;
-      color: #000000;
-    }
+    .logo-fideico { width: 165px; max-width: 100%; height: auto; object-fit: contain; }
+    .logo-cefix { width: 180px; max-width: 100%; height: auto; object-fit: contain; border-radius: 10px; }
+    .leyenda-cargo { margin: 0; font-size: 11.5px; font-weight: 500; font-style: italic; color: #333333; line-height: 1.4; }
+    .leyenda-cargo strong { font-style: normal; font-weight: 700; color: #000000; }
 
     /* =========================================================
        ANIMACIÓN DORADA DE MAQUINADO Y SUBIDA A LA NUBE
@@ -530,18 +553,15 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
     @keyframes escanerLaser {
       0%   { top: 6%; opacity: 0.4; }
       50%  { top: 88%; opacity: 1; }
       100% { top: 6%; opacity: 0.4; }
     }
-
     @keyframes pulsoOro {
       0%, 100% { box-shadow: 0 0 22px rgba(255, 215, 0, 0.25), inset 0 0 18px rgba(255, 215, 0, 0.15); }
       50%      { box-shadow: 0 0 42px rgba(255, 215, 0, 0.55), inset 0 0 28px rgba(255, 235, 150, 0.3); }
     }
-
     @keyframes barraCargaOro {
       0%   { transform: translateX(-100%); }
       100% { transform: translateX(250%); }
@@ -559,7 +579,6 @@
       backdrop-filter: blur(18px) saturate(160%);
       -webkit-backdrop-filter: blur(18px) saturate(160%);
     }
-
     .tarjeta-maquinando {
       width: 100%;
       max-width: 340px;
@@ -574,8 +593,6 @@
       gap: 16px;
       animation: pulsoOro 2.4s ease-in-out infinite;
     }
-
-    /* Silueta del boleto maquinándose */
     .boleto-scan {
       position: relative;
       width: 96px;
@@ -592,20 +609,11 @@
       justify-content: center;
       gap: 10px;
     }
-
-    /* Líneas simulando grabado del boleto */
-    .boleto-scan span {
-      display: block;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255, 223, 100, 0.35);
-    }
+    .boleto-scan span { display: block; height: 6px; border-radius: 999px; background: rgba(255, 223, 100, 0.35); }
     .boleto-scan span:nth-child(1) { width: 64%; }
     .boleto-scan span:nth-child(2) { width: 46%; }
     .boleto-scan span:nth-child(3) { width: 72%; height: 22px; border-radius: 6px; }
     .boleto-scan span:nth-child(4) { width: 52%; }
-
-    /* Haz láser dorado subiendo y bajando */
     .laser-dorado {
       position: absolute;
       left: 0;
@@ -615,7 +623,6 @@
       box-shadow: 0 0 14px 3px rgba(255, 215, 0, 0.9);
       animation: escanerLaser 1.6s ease-in-out infinite;
     }
-
     .titulo-oro {
       margin: 0;
       font-family: 'Blinker', sans-serif;
@@ -629,29 +636,9 @@
       -webkit-text-fill-color: transparent;
       animation: brilloDorado 3s ease infinite;
     }
-
-    .subtitulo-oro {
-      margin: 0;
-      font-size: 13px;
-      font-weight: 500;
-      color: rgba(255, 244, 198, 0.85);
-    }
-
-    .barra-oro-fondo {
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255, 215, 0, 0.16);
-      overflow: hidden;
-    }
-
-    .barra-oro-flujo {
-      width: 45%;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, transparent, #ffd700, #fff4b8, #d4af37);
-      animation: barraCargaOro 1.4s ease-in-out infinite;
-    }
+    .subtitulo-oro { margin: 0; font-size: 13px; font-weight: 500; color: rgba(255, 244, 198, 0.85); }
+    .barra-oro-fondo { width: 100%; height: 6px; border-radius: 999px; background: rgba(255, 215, 0, 0.16); overflow: hidden; }
+    .barra-oro-flujo { width: 45%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, transparent, #ffd700, #fff4b8, #d4af37); animation: barraCargaOro 1.4s ease-in-out infinite; }
   </style>
 </head>
 <body>
@@ -675,18 +662,52 @@
       <button class="btn-generar" id="btnLogin" onclick="iniciarSesion()">Ingresar a mis boletos</button>
     </div>
 
-    <!-- 2. PANEL DEL EMISOR (OCULTO HASTA INICIAR SESIÓN) -->
+    <!-- 2. PANEL DEL EMISOR -->
     <div class="panel oculto" id="panelEmisor">
       <div class="barra-sesion">
         <div class="info-vendedor">
           <strong id="nombreVendedorActivo"></strong>
           <span id="metaVendedorActivo"></span>
         </div>
-        <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+        <div class="acciones-sesion">
+          <button type="button" class="btn-actualizar" id="btnActualizar" onclick="actualizarEstado()">↻ Actualizar</button>
+          <button type="button" class="btn-salir" onclick="cerrarSesion()">Salir</button>
+        </div>
+      </div>
+
+      <!-- RESUMEN RÁPIDO DEL VENDEDOR -->
+      <div class="resumen-vendedor">
+        <div class="dato-resumen">
+          <strong id="statVendidos">0/0</strong>
+          <span>Vendidos</span>
+        </div>
+        <div class="dato-resumen">
+          <strong id="statRevision">0</strong>
+          <span>Revisión</span>
+        </div>
+        <div class="dato-resumen">
+          <strong id="statDinero">$0</strong>
+          <span>Acumulado</span>
+        </div>
       </div>
 
       <!-- INDICADOR VISUAL DE BOLETOS -->
       <div id="estadoBoletos" class="estado-boletos"></div>
+      <p class="ayuda-chips">Toca un boleto verde o amarillo para consultar o reenviar su comprobante.</p>
+
+      <!-- TARJETA DE CONSULTA / REENVÍO -->
+      <div id="panelReenvio" class="panel-reenvio oculto">
+        <div class="reenvio-header">
+          <strong id="reenvioFolio">Boleto</strong>
+          <button type="button" class="btn-actualizar" onclick="cerrarPanelReenvio()">✕</button>
+        </div>
+        <div class="reenvio-datos" id="reenvioDatos"></div>
+        <div class="reenvio-botones">
+          <button type="button" class="btn-whatsapp" onclick="reenviarWhatsApp()">Reenviar por WhatsApp</button>
+          <button type="button" class="btn-otro" id="btnCopiarReenvio" onclick="copiarMensajeReenvio()">Copiar mensaje</button>
+          <button type="button" class="btn-descargar" onclick="abrirPdfReenvio()">Abrir PDF en Drive</button>
+        </div>
+      </div>
 
       <!-- AVISO DE CORTE COMPLETO -->
       <div id="panelCompletado" class="panel-completado oculto">
@@ -706,18 +727,14 @@
 
       <div>
         <label for="telefono">Teléfono (10 dígitos)</label>
-        <input type="tel" id="telefono" placeholder="Ej. 6562784337" maxlength="12">
+        <input type="tel" id="telefono" placeholder="Ej. 6562784337" maxlength="16" onblur="limpiarCampoTelefono()">
       </div>
 
       <details class="caja-tyc">
         <summary>Ver Términos y Condiciones (AR°8)</summary>
         <div class="texto-tyc">
-          <p><strong>TÉRMINOS Y CONDICIONES — ACTIVIDAD RECAUDATORIA AR°8 (FiDEICO | CEFIX)</strong></p>
-          <p>1. El costo de recuperación por boleto es de $100.00 MXN (cien pesos 00/100 M.N.), no reembolsable.</p>
-          <p>2. Únicamente participarán los boletos debidamente liquidados y registrados en la base de datos oficial de FiDEICO.</p>
-          <p>3. El premio consiste en una experiencia de Hora de Vuelo / Piloto por un Día sujeta a disponibilidad, clima y lineamientos operativos de Vivevolando.</p>
-          <p>4. Para reclamar el premio es indispensable presentar este comprobante electrónico con folio válido e identificación oficial.</p>
-          <p>5. Los fondos recaudados se destinan íntegramente a proyectos de investigación y cohetería experimental de CEFIX.</p>
+          <p>Puedes consultar el documento oficial completo de Términos y Condiciones aquí:</p>
+          <p><a href="https://drive.google.com/file/d/1I38z-LxOnhz3AKTxoKuvpfa_a-Qpqv5u/view?usp=drive_link" target="_blank" style="color:#0500ff; font-weight:700;">Abrir Términos y Condiciones (Drive)</a></p>
         </div>
       </details>
 
@@ -737,11 +754,13 @@
 
     <!-- BOTONES DE ENTREGA -->
     <div class="acciones" id="panelAcciones">
-      <button class="btn-whatsapp" onclick="abrirWhatsApp()">1. Enviar por WhatsApp (Enlace PDF + TyC)</button>
-      <button class="btn-descargar" onclick="descargarPDF()">2. Descargar copia en PDF</button>
+      <button class="btn-whatsapp" onclick="abrirWhatsApp()">1. Enviar por WhatsApp</button>
+      <button class="btn-otro" id="btnCopiarMensaje" onclick="copiarMensajeActual()">2. Copiar mensaje de WhatsApp</button>
+      <button class="btn-descargar" onclick="descargarPDF()">3. Descargar copia en PDF</button>
     </div>
+  </main>
 
-  <!-- PIE INSTITUCIONAL: FiDEICO + CEFIX + ADMINISTRACIÓN -->
+  <!-- PIE INSTITUCIONAL -->
   <footer class="pie-institucional">
     <img src="fideico-logo.png" alt="FiDEICO" class="logo-fideico">
     <img src="cefix-logo.png" alt="CEFIX" class="logo-cefix">
@@ -769,6 +788,7 @@
   <script>
     const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxOClEE1I9yY0j85tLwD3RGacstcO1VC5P2GaetNKi5uSubHpwSPYADjmWo5_kQI7Wa/exec";
     const TELEFONO_ADMIN = "6562784337";
+    const URL_TYC = "https://drive.google.com/file/d/1I38z-LxOnhz3AKTxoKuvpfa_a-Qpqv5u/view?usp=drive_link";
 
     const canvas = document.getElementById('lienzoBoleto');
     const ctx = canvas.getContext('2d');
@@ -778,9 +798,12 @@
     let pinActivo = "";
     let foliosVendidos = [];
     let foliosEnRevision = [];
+    let detallesVentas = {};
+    let boletoConsultaActual = null;
 
     let plantillaCargada = false;
     const imagenFondo = new Image();
+    imagenFondo.crossOrigin = "anonymous";
     imagenFondo.src = "plantilla.png";
     imagenFondo.onload = () => { plantillaCargada = true; };
 
@@ -789,6 +812,55 @@
     let ultimoTelefonoLimpio = "";
     let ultimoUrlPdf = "";
     let boletoListoParaOtro = false;
+
+    // Limpia lada +52 / 521 y caracteres no numéricos para obtener 10 dígitos exactos
+    function limpiarTelefono10(valor) {
+      let digitos = String(valor || "").replace(/\D/g, '');
+      if (digitos.length === 13 && digitos.startsWith("521")) digitos = digitos.slice(3);
+      else if (digitos.length === 12 && digitos.startsWith("52")) digitos = digitos.slice(2);
+      else if (digitos.length === 11 && digitos.startsWith("1")) digitos = digitos.slice(1);
+      return digitos;
+    }
+
+    function limpiarCampoTelefono() {
+      const input = document.getElementById('telefono');
+      const limpio = limpiarTelefono10(input.value);
+      if (limpio.length === 10) input.value = limpio;
+    }
+
+    function formatearTelefono(numeroLimpio) {
+      return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+    }
+
+    function construirMensajeWhatsApp(nombre, folio, urlPdf) {
+      return `Hola *${nombre}*,
+
+Aquí tienes tu comprobante oficial de la *Rifa JUÁREZ A LAS ALTURAS* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
+
+*Folio:* ${folio}
+*Descarga tu boleto oficial en PDF aquí:*
+${urlPdf}
+
+Al participar en esta rifa, contribuyes al desarrollo de las actividades del Club de Cohetería Experimental CEFIX, impulsando la divulgación científica, el aprendizaje y el acercamiento de la sociedad, especialmente de niñas, niños y jóvenes, a la ciencia, la tecnología y la exploración espacial.
+
+Agradecemos especialmente a ViveVolando Academia de Vuelo por su confianza y colaboración para hacer posible esta iniciativa y permitirnos continuar llevando el conocimiento más allá de las aulas.
+
+¡Gracias por ser parte de este despegue! ✨🚀
+
+*Términos y Condiciones:*
+${URL_TYC}`;
+    }
+
+    async function copiarTexto(texto, idBoton, textoOriginal) {
+      try {
+        await navigator.clipboard.writeText(texto);
+        const btn = document.getElementById(idBoton);
+        btn.textContent = "✓ ¡Mensaje copiado!";
+        setTimeout(() => { btn.textContent = textoOriginal; }, 2200);
+      } catch (e) {
+        alert("No se pudo copiar automáticamente. Usa el botón de WhatsApp.");
+      }
+    }
 
     function activarModoOtroBoleto(activo) {
       const boton = document.getElementById('btnGenerar');
@@ -805,16 +877,9 @@
     }
 
     selectNumero.addEventListener('change', () => {
-      if (boletoListoParaOtro) {
-        activarModoOtroBoleto(false);
-      }
+      if (boletoListoParaOtro) activarModoOtroBoleto(false);
     });
 
-    function formatearTelefono(numeroLimpio) {
-      return numeroLimpio.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-    }
-
-    // Ajusta el nombre en 1 o 2 líneas dentro del recuadro negro
     function dibujarNombreEnCaja(ctx, texto, centroX, centroY, anchoMax, altoMax, tamInicial) {
       let tam = tamInicial;
       let lineas = [];
@@ -840,9 +905,7 @@
         const altoTotal = lineas.length * interlineado;
         const cabeAncho = lineas.every(l => ctx.measureText(l).width <= anchoMax);
 
-        if (lineas.length <= 2 && cabeAncho && altoTotal <= altoMax) {
-          break;
-        }
+        if (lineas.length <= 2 && cabeAncho && altoTotal <= altoMax) break;
         tam -= 2;
       }
 
@@ -859,7 +922,6 @@
       });
     }
 
-    // Ajusta una sola línea (Folio y Vendedor) para que siempre quepa en su ancho máximo
     function dibujarTextoAjustado(ctx, texto, x, y, anchoMax, tamInicial, fuenteEstilo, fuenteFamilia, color, alineacion) {
       let tam = tamInicial;
       while (tam > 10) {
@@ -903,6 +965,7 @@
         pinActivo = pin;
         foliosVendidos = data.vendidos || [];
         foliosEnRevision = data.enRevision || [];
+        detallesVentas = data.detallesVentas || {};
 
         document.getElementById('nombreVendedorActivo').textContent = vendedorActivo.nombre.toUpperCase();
         document.getElementById('metaVendedorActivo').textContent = `CÓDIGO ${vendedorActivo.codigo}  |  ${vendedorActivo.matricula}`;
@@ -919,11 +982,41 @@
       }
     }
 
+    // Botón rápido para sincronizar estados desde Sheets sin cerrar sesión
+    async function actualizarEstado() {
+      if (!vendedorActivo) return;
+      const btn = document.getElementById('btnActualizar');
+      btn.disabled = true;
+      btn.textContent = "↻ ...";
+
+      try {
+        const res = await fetch(URL_SCRIPT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ accion: "login", codigo: vendedorActivo.codigo, pin: pinActivo })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          foliosVendidos = data.vendidos || [];
+          foliosEnRevision = data.enRevision || [];
+          detallesVentas = data.detallesVentas || {};
+          actualizarNumeros();
+        }
+      } catch (err) {
+        alert("No se pudo actualizar: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "↻ Actualizar";
+      }
+    }
+
     function cerrarSesion() {
       vendedorActivo = null;
       pinActivo = "";
       foliosVendidos = [];
       foliosEnRevision = [];
+      detallesVentas = {};
+      cerrarPanelReenvio();
       activarModoOtroBoleto(false);
       document.getElementById('loginPin').value = "";
       document.getElementById('nombre').value = "";
@@ -935,43 +1028,81 @@
       document.getElementById('panelLogin').classList.remove('oculto');
     }
 
+    function abrirPanelReenvio(folio) {
+      const info = detallesVentas[folio];
+      if (!info) {
+        alert(`No se encontraron detalles guardados para ${folio}. Pulsa "↻ Actualizar".`);
+        return;
+      }
+      boletoConsultaActual = info;
+      document.getElementById('reenvioFolio').textContent = `Boleto ${info.folio} (${info.estatus === "REVISION" ? "En revisión" : "Vendido"})`;
+      document.getElementById('reenvioDatos').innerHTML =
+        `<strong>Titular:</strong> ${info.nombre}<br><strong>Teléfono:</strong> ${info.telefono}`;
+      document.getElementById('panelReenvio').classList.remove('oculto');
+    }
+
+    function cerrarPanelReenvio() {
+      boletoConsultaActual = null;
+      document.getElementById('panelReenvio').classList.add('oculto');
+    }
+
+    function reenviarWhatsApp() {
+      if (!boletoConsultaActual) return;
+      const tel = limpiarTelefono10(boletoConsultaActual.telefono);
+      const mensaje = construirMensajeWhatsApp(boletoConsultaActual.nombre, boletoConsultaActual.folio, boletoConsultaActual.urlPdf);
+      window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
+
+    function copiarMensajeReenvio() {
+      if (!boletoConsultaActual) return;
+      const mensaje = construirMensajeWhatsApp(boletoConsultaActual.nombre, boletoConsultaActual.folio, boletoConsultaActual.urlPdf);
+      copiarTexto(mensaje, 'btnCopiarReenvio', 'Copiar mensaje');
+    }
+
+    function abrirPdfReenvio() {
+      if (!boletoConsultaActual || !boletoConsultaActual.urlPdf) return;
+      window.open(boletoConsultaActual.urlPdf, '_blank');
+    }
+
     function actualizarNumeros() {
       const contenedor = document.getElementById('estadoBoletos');
       const panelCompletado = document.getElementById('panelCompletado');
       const btnGenerar = document.getElementById('btnGenerar');
-      
+
       selectNumero.innerHTML = "";
       contenedor.innerHTML = "";
 
       let vendidosPropios = 0;
+      let revisionPropios = 0;
       let primerDisponible = null;
 
       for (let i = 1; i <= vendedorActivo.maxBoletos; i++) {
         const folioActual = vendedorActivo.codigo + i;
         const estaVendido = foliosVendidos.includes(folioActual);
         const estaEnRevision = foliosEnRevision.includes(folioActual);
+        const bloqueado = estaVendido || estaEnRevision;
 
-        if (estaVendido) {
-          vendidosPropios++;
-        } else if (primerDisponible === null) {
-          primerDisponible = i;
-        }
+        if (estaVendido) vendidosPropios++;
+        if (estaEnRevision) revisionPropios++;
+        if (!bloqueado && primerDisponible === null) primerDisponible = i;
 
         const opcion = document.createElement('option');
         opcion.value = i;
         opcion.textContent = estaEnRevision
           ? `${folioActual} (En revisión)`
           : (estaVendido ? `${folioActual} (Vendido)` : folioActual);
-        opcion.disabled = estaVendido;
+        opcion.disabled = bloqueado;
         selectNumero.appendChild(opcion);
 
         const chip = document.createElement('div');
         if (estaEnRevision) {
           chip.className = 'chip revision';
           chip.textContent = `⚠ ${folioActual}`;
+          chip.onclick = () => abrirPanelReenvio(folioActual);
         } else if (estaVendido) {
           chip.className = 'chip vendido';
           chip.textContent = `✓ ${folioActual}`;
+          chip.onclick = () => abrirPanelReenvio(folioActual);
         } else {
           chip.className = 'chip';
           chip.textContent = folioActual;
@@ -979,13 +1110,17 @@
         contenedor.appendChild(chip);
       }
 
+      // Actualiza resumen rápido
+      document.getElementById('statVendidos').textContent = `${vendidosPropios}/${vendedorActivo.maxBoletos}`;
+      document.getElementById('statRevision').textContent = revisionPropios;
+      document.getElementById('statDinero').textContent = `$${vendidosPropios * 100}`;
+
       if (primerDisponible !== null) {
         selectNumero.value = primerDisponible;
       }
 
       if (vendidosPropios >= vendedorActivo.maxBoletos) {
         panelCompletado.classList.remove('oculto');
-        btnVenderOtro.classList.add('oculto');
         boletoListoParaOtro = false;
         btnGenerar.disabled = true;
         btnGenerar.classList.remove('btn-otro');
@@ -993,7 +1128,6 @@
         btnGenerar.textContent = "Todos tus boletos han sido vendidos";
       } else {
         panelCompletado.classList.add('oculto');
-        
         btnGenerar.disabled = false;
         if (!boletoListoParaOtro) {
           btnGenerar.textContent = "Generar Boleto ($100.00 MXN)";
@@ -1023,8 +1157,7 @@
 
 Listo, ya terminé de vender el 100% de mis boletos asignados.`;
 
-      const url = `https://wa.me/52${TELEFONO_ADMIN}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
+      window.open(`https://wa.me/52${TELEFONO_ADMIN}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
     async function solicitarAyuda() {
@@ -1044,6 +1177,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
         });
         if (!foliosEnRevision.includes(folioLimpio)) {
           foliosEnRevision.push(folioLimpio);
+          if (detallesVentas[folioLimpio]) detallesVentas[folioLimpio].estatus = "REVISION";
           actualizarNumeros();
         }
       } catch (e) {
@@ -1059,8 +1193,7 @@ Listo, ya terminé de vender el 100% de mis boletos asignados.`;
 
 Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión.`;
 
-      const url = `https://wa.me/52${TELEFONO_ADMIN}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
+      window.open(`https://wa.me/52${TELEFONO_ADMIN}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
     async function generarBoleto() {
@@ -1076,7 +1209,7 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
 
       const numero = selectNumero.value;
       const nombre = document.getElementById('nombre').value.trim().toUpperCase();
-      const telefonoLimpio = document.getElementById('telefono').value.replace(/\D/g, '');
+      const telefonoLimpio = limpiarTelefono10(document.getElementById('telefono').value);
 
       if (!nombre || telefonoLimpio.length !== 10) {
         alert("Por favor ingresa el nombre del titular y un teléfono válido de 10 dígitos.");
@@ -1084,8 +1217,8 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
       }
 
       const folio = vendedorActivo.codigo + numero;
-      if (foliosVendidos.includes(folio)) {
-        alert(`El boleto ${folio} ya fue vendido.`);
+      if (foliosVendidos.includes(folio) || foliosEnRevision.includes(folio)) {
+        alert(`El boleto ${folio} ya fue vendido o está en revisión.`);
         return;
       }
 
@@ -1109,14 +1242,12 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
         ultimoNombre = nombre;
         ultimoTelefonoLimpio = telefonoLimpio;
 
-        // Resolución fija exacta 898 x 1920
         canvas.width = 898;
         canvas.height = 1920;
         const W = canvas.width;
         const H = canvas.height;
 
         ctx.clearRect(0, 0, W, H);
-
         if (plantillaCargada) {
           ctx.drawImage(imagenFondo, 0, 0, W, H);
         } else {
@@ -1124,60 +1255,20 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
           ctx.fillRect(0, 0, W, H);
         }
 
-        // 1. NOMBRE DEL TITULAR (Blinker ExtraBold, más grande y pegado, con margen de respeto)
-        dibujarNombreEnCaja(
-          ctx,
-          ultimoNombre,
-          W * 0.410,
-          H * 0.231,
-          W * 0.55,
-          H * 0.076,
-          82
-        );
+        dibujarNombreEnCaja(ctx, ultimoNombre, W * 0.410, H * 0.231, W * 0.55, H * 0.076, 82);
+        dibujarTextoAjustado(ctx, ultimoFolio, W * 0.8045, H * 0.231, W * 0.132, 88, "800", "'Blinker', sans-serif", "#ffffff", "center");
 
-        // 2. FOLIO EN EL CUADRO VERDE (Blinker ExtraBold, centrado exacto)
-        dibujarTextoAjustado(
-          ctx,
-          ultimoFolio,
-          W * 0.8045,
-          H * 0.231,
-          W * 0.132,
-          88,
-          "800",
-          "'Blinker', sans-serif",
-          "#ffffff",
-          "center"
-        );
-
-        // 3. TELÉFONO (Alineado al borde izquierdo del cuadro negro)
         ctx.font = "500 20px 'Inter', sans-serif";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         ctx.fillText("TEL. " + telefonoFormateado, W * 0.095, H * 0.298);
 
-        // 4. VENDEDOR (Alineado al borde derecho del cuadro negro)
         const textoVendedor = `VENDEDOR: ${vendedorActivo.nombre.toUpperCase()}`;
-        dibujarTextoAjustado(
-          ctx,
-          textoVendedor,
-          W * 0.905,
-          H * 0.298,
-          W * 0.50,
-          19,
-          "italic 500",
-          "'Inter', sans-serif",
-          "#000000",
-          "right"
-        );
+        dibujarTextoAjustado(ctx, textoVendedor, W * 0.905, H * 0.298, W * 0.50, 19, "italic 500", "'Inter', sans-serif", "#000000", "right");
 
-        // Generar PDF en formato VERTICAL (898 x 1920) con compresión ágil
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'px',
-          format: [W, H]
-        });
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [W, H] });
         pdf.addImage(canvas.toDataURL('image/jpeg', 0.82), 'JPEG', 0, 0, W, H);
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
 
@@ -1206,6 +1297,13 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
 
         ultimoUrlPdf = resultado.urlPdf;
         foliosVendidos.push(folio);
+        detallesVentas[folio] = {
+          folio: folio,
+          nombre: ultimoNombre,
+          telefono: telefonoFormateado,
+          urlPdf: ultimoUrlPdf,
+          estatus: "OK"
+        };
         actualizarNumeros();
         activarModoOtroBoleto(true);
         document.getElementById('panelAcciones').style.display = "flex";
@@ -1223,36 +1321,19 @@ Hola, tuve un error al llenar o emitir este boleto y quedó marcado en revisión
 
     function descargarPDF() {
       const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height] });
       pdf.addImage(canvas.toDataURL('image/jpeg', 0.82), 'JPEG', 0, 0, canvas.width, canvas.height);
       pdf.save(`Boleto_FiDEICO_${ultimoFolio}.pdf`);
     }
 
     function abrirWhatsApp() {
-      const mensaje =
-`Hola *${ultimoNombre}*,
+      const mensaje = construirMensajeWhatsApp(ultimoNombre, ultimoFolio, ultimoUrlPdf);
+      window.open(`https://wa.me/52${ultimoTelefonoLimpio}?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
 
-Aquí tienes tu comprobante oficial de la *Rifa JUÁREZ A LAS ALTURAS* (Actividad Recaudatoria AR°8 — FiDEICO | CEFIX).
-
-*Folio:* ${ultimoFolio}
-*Descarga tu boleto oficial en PDF aquí:*
-${ultimoUrlPdf}
-
-Al participar en esta rifa, contribuyes al desarrollo de las actividades del Club de Cohetería Experimental CEFIX, impulsando la divulgación científica, el aprendizaje y el acercamiento de la sociedad, especialmente de niñas, niños y jóvenes, a la ciencia, la tecnología y la exploración espacial.
-
-Agradecemos especialmente a ViveVolando Academia de Vuelo por su confianza y colaboración para hacer posible esta iniciativa y permitirnos continuar llevando el conocimiento más allá de las aulas.
-
-¡Gracias por ser parte de este despegue! ✨🚀
-
-*Términos y Condiciones:*
-https://drive.google.com/file/d/1I38z-LxOnhz3AKTxoKuvpfa_a-Qpqv5u/view?usp=drive_link`;
-
-      const url = `https://wa.me/52${ultimoTelefonoLimpio}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
+    function copiarMensajeActual() {
+      const mensaje = construirMensajeWhatsApp(ultimoNombre, ultimoFolio, ultimoUrlPdf);
+      copiarTexto(mensaje, 'btnCopiarMensaje', '2. Copiar mensaje de WhatsApp');
     }
 
     // Efecto rebote slime al soltar cualquier botón
