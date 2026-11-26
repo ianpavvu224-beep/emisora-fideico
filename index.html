@@ -46,14 +46,30 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding-top: 6px;
+      padding: 18px 24px;
+      border-radius: 28px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.48) 0%,
+        rgba(255, 255, 255, 0.22) 100%
+      );
+      backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+      -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.45),
+        inset 0 0 24px rgba(255, 255, 255, 0.25);
     }
+
     .logo-sortek {
-      width: 100%;
-      max-width: 280px;
+      display: block;
+      width: auto;
       height: auto;
+      max-width: 240px;
+      max-height: 90px;
       object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.85));
     }
 
     /* CONTENEDOR CENTRAL */
@@ -319,13 +335,21 @@
       flex-direction: column;
       align-items: center;
       gap: 14px;
-      padding: 16px 20px;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.75);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      padding: 20px 24px;
+      border-radius: 28px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.48) 0%,
+        rgba(255, 255, 255, 0.22) 100%
+      );
+      backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+      -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.45),
+        inset 0 0 24px rgba(255, 255, 255, 0.25);
       text-align: center;
     }
     .logo-fideico {
@@ -353,6 +377,74 @@
       font-style: normal;
       font-weight: 700;
       color: #000000;
+    }
+    /* ANIMACIONES DE COLOR LÍQUIDO Y DESTELLO DE CRISTAL */
+    @keyframes flujoLiquido {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes destelloCristal {
+      0% { left: -120%; }
+      35%, 100% { left: 140%; }
+    }
+
+    /* Botones Azules (Ingresar, Generar, WhatsApp) */
+    .btn-generar, .btn-whatsapp {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(
+        120deg,
+        rgba(5, 0, 255, 0.88),
+        rgba(0, 140, 255, 0.82),
+        rgba(45, 30, 255, 0.9),
+        rgba(5, 0, 255, 0.88)
+      );
+      background-size: 250% 250%;
+      animation: flujoLiquido 5s ease infinite;
+    }
+
+    /* Botón Verde (Corte Completo) y Chips Vendidos */
+    .btn-completado, .chip.vendido {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(
+        120deg,
+        rgba(22, 163, 74, 0.88),
+        rgba(52, 211, 153, 0.85),
+        rgba(16, 185, 129, 0.9),
+        rgba(22, 163, 74, 0.88)
+      );
+      background-size: 250% 250%;
+      animation: flujoLiquido 2s ease infinite;
+    }
+
+    /* Reflejo diagonal de luz pasando por los botones */
+    .btn-generar::after,
+    .btn-whatsapp::after,
+    .btn-completado::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.35),
+        transparent
+      );
+      transform: skewX(-25deg);
+      animation: destelloCristal 4.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Pausa la animación si el botón está deshabilitado */
+    button:disabled,
+    button:disabled::after {
+      animation: none;
     }
   </style>
 </head>
@@ -446,7 +538,7 @@
   <footer class="pie-institucional">
     <img src="fideico-logo.png" alt="FiDEICO" class="logo-fideico">
     <img src="cefix-logo.png" alt="CEFIX" class="logo-cefix">
-    <p class="leyenda-cargo">Sistema administrado y operado a cargo de <strong>FiDEICO</strong> y <strong>ASIFOR</strong>.</p>
+    <p class="leyenda-cargo">Sistema administrado y operado a cargo de <strong>FiDEICO</strong>.</p>
   </footer>
 
   <script>
