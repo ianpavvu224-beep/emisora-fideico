@@ -935,6 +935,104 @@ ${URL_TYC}`;
       ctx.fillText(texto, x, y);
     }
 
+    function esperarPlantilla() {
+      return new Promise(resolve => {
+        if (plantillaCargada) return resolve();
+        const check = setInterval(() => {
+          if (plantillaCargada) {
+            clearInterval(check);
+            resolve();
+          }
+        }, 100);
+        setTimeout(() => { clearInterval(check); resolve(); }, 4000);
+      });
+    }
+
+    async function dibujarBoletoYGenerarBase64(folio, nombre, telefonoFormateado) {
+      await Promise.all([
+        document.fonts.load("800 82px 'Blinker'"),
+        document.fonts.load("800 88px 'Blinker'"),
+        document.fonts.load("500 20px 'Inter'"),
+        document.fonts.load("italic 500 19px 'Inter'"),
+        esperarPlantilla()
+      ]);
+      await document.fonts.ready;
+
+      canvas.width = 898;
+      canvas.height = 1920;
+      const W = canvas.width;
+      const H = canvas.height;
+
+      ctx.clearRect(0, 0, W, H);
+      if (plantillaCargada) {
+        ctx.drawImage(imagenFondo, 0, 0, W, H);
+      } else {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      dibujarNombreEnCaja(ctx, nombre.toUpperCase(), W * 0.410, H * 0.231, W * 0.55, H * 0.076, 82);
+      dibujarTextoAjustado(ctx, folio, W * 0.8045, H * 0.231, W * 0.132, 88, "800", "'Blinker', sans-serif", "#ffffff", "center");
+
+      ctx.font = "500 20px 'Inter', sans-serif";
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("TEL. " + telefonoFormateado, W * 0.095, H * 0.298);
+
+      const textoVendedor = `VENDEDOR: ${vendedorActivo.nombre.toUpperCase()}`;
+      dibujarTextoAjustado(ctx, textoVendedor, W * 0.905, H * 0.298, W * 0.50, 19, "italic 500", "'Inter', sans-serif", "#000000", "right");
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [W, H] });
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.82), 'JPEG', 0, 0, W, H);
+      return pdf.output('datauristring').split(',')[1];
+    }
+
+    async function procesarRegeneracionesPendientes() {
+      const pendientes = Object.values(detallesVentas).filter(v => v.estatus === "REGENERAR");
+      if (pendientes.length === 0) return;
+
+      const overlay = document.getElementById('overlayMaquinando');
+      const textoOro = document.getElementById('textoEstadoOro');
+      const subtextoOro = document.getElementById('subtextoEstadoOro');
+      overlay.classList.remove('oculto');
+
+      try {
+        for (const boleto of pendientes) {
+          textoOro.textContent = `CORRIGIENDO ${boleto.folio}`;
+          subtextoOro.textContent = "Actualizando PDF oficial con los datos corregidos...";
+
+          const telLimpio = limpiarTelefono10(boleto.telefono);
+          const telFormateado = telLimpio.length === 10 ? formatearTelefono(telLimpio) : boleto.telefono;
+          const pdfBase64 = await dibujarBoletoYGenerarBase64(boleto.folio, boleto.nombre, telFormateado);
+
+          const res = await fetch(URL_SCRIPT, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              accion: "regenerar",
+              codigo: vendedorActivo.codigo,
+              pin: pinActivo,
+              folio: boleto.folio,
+              pdfBase64: pdfBase64
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            detallesVentas[boleto.folio].urlPdf = data.urlPdf;
+            detallesVentas[boleto.folio].estatus = "OK";
+            foliosEnRevision = foliosEnRevision.filter(f => f !== boleto.folio);
+          }
+        }
+        actualizarNumeros();
+      } catch (e) {
+        console.error("Error al regenerar:", e);
+      } finally {
+        overlay.classList.add('oculto');
+      }
+    }
+
     async function iniciarSesion() {
       const codigo = document.getElementById('loginCodigo').value.trim().toUpperCase();
       const pin = document.getElementById('loginPin').value.trim();
@@ -974,6 +1072,7 @@ ${URL_TYC}`;
         document.getElementById('marcoBoleto').classList.remove('oculto');
 
         actualizarNumeros();
+        await procesarRegeneracionesPendientes();
       } catch (err) {
         alert("Error de conexión: " + err.message);
       } finally {
@@ -1001,6 +1100,7 @@ ${URL_TYC}`;
           foliosEnRevision = data.enRevision || [];
           detallesVentas = data.detallesVentas || {};
           actualizarNumeros();
+          await procesarRegeneracionesPendientes();
         }
       } catch (err) {
         alert("No se pudo actualizar: " + err.message);
